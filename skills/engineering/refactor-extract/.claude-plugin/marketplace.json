@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Disciplined extraction of duplicated logic into a shared module: confirm worth extracting (≥2 callers, no caller-specific state), decide the shape, two-commit pattern (extract + migrate), verify per consumer. Stack-agnostic.",
-    "version": "2026.05.07"
+    "version": "2026.08.09"
   },
   "plugins": [
     {
