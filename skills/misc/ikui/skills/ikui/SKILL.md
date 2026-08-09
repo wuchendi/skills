@@ -1,10 +1,10 @@
 ---
 name: ikui
 description: Manages ikui components and blocks — searching, adding, composing, and debugging UI from the ikui registry (@ikui). ikui ships copy-paste React primitives for media/timeline editing (audio waveform + player, video thumbnail strips, a zoom-aware timeline of ruler / element / playhead, image compare / crop, particle image, copy button) AND ready-made business blocks composed from them — audio trimmer, video trimmer, image cropper — that deliver a finished feature end to end. Triggers when adding or fixing any of these, when the project's components.json contains an "@ikui" registry, or for requests like "add an ikui waveform", "build a video trimmer", "drop in an audio trimmer block", "image before/after slider", "crop an image", or "add @ikui/<name>".
-allowed-tools: Bash(npx shadcn@latest *), Bash(pnpm dlx shadcn@latest *), Bash(bunx --bun shadcn@latest *), Bash(curl -s https://ik-ui.pages.dev/*)
+allowed-tools: Bash(npx shadcn@latest add *), Bash(npx shadcn@latest init *), Bash(pnpm dlx shadcn@latest add *), Bash(pnpm dlx shadcn@latest init *), Bash(bunx --bun shadcn@latest add *), Bash(bunx --bun shadcn@latest init *), Bash(curl -s https://ik-ui.pages.dev/*)
 metadata:
   author: wudi
-  version: "2026.06.13"
+  version: "2026.08.09"
   source: https://github.com/WuChenDi/skills
 ---
 
@@ -25,7 +25,7 @@ ikui is organized in two tiers — **knowing which one the user needs is the sin
 - **Primitives** (`registry:component` / `registry:lib`) are small, single-purpose, intentionally "dumb" parts: a waveform, a thumbnail strip, a timeline ruler/element/playhead, a crop box. They own no business logic — the playback clock, seeking, and track wiring are left to the consumer. Reach for these when the user is **building their own** editor/feature.
 - **Blocks** (`registry:block`) are **business compositions** — ikui's signature value. Each block stitches many primitives together into a working feature with all the wiring done: state, playback, readouts, export. Reach for a block when the user wants the **finished thing**, not the parts.
 
-Current blocks (always confirm against the live manifest below):
+Current blocks (always confirm against the live registry — see "Current Components" below):
 
 | Block | Composed from | Delivers |
 | --- | --- | --- |
@@ -37,13 +37,7 @@ Default: if the user names the outcome ("trim this video", "let users crop their
 
 ## Current Components
 
-Live registry manifest (auto-injected). Each line is an installable item — `@ikui/<name>` is the install id.
-
-```
-!`curl -s https://ik-ui.pages.dev/r/registry.json | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{try{for(const i of JSON.parse(d).items)console.log('- @ikui/'+i.name+'  ('+i.type.replace('registry:','')+', '+(i.category||'-')+')  '+i.description)}catch(e){console.log('(could not load registry — fetch https://ik-ui.pages.dev/r/registry.json manually)')}})"`
-```
-
-If the block above is empty (no network at load time), fetch `https://ik-ui.pages.dev/r/registry.json` yourself and read its `items` array before advising. **Never hardcode the component list from memory** — it changes as ikui grows.
+Before advising or installing, fetch the live manifest — don't work from memory. Fetch `https://ik-ui.pages.dev/r/registry.json` and read its `items` array; each item's `name` is the `@ikui/<name>` install id, with `type`, `category`, and `description` alongside. **Never hardcode the component list** — it changes as ikui grows.
 
 ## Prerequisite: register `@ikui`
 
@@ -108,7 +102,7 @@ See [references/conventions.md](./references/conventions.md) for the fuller rule
 ## Workflow
 
 1. **Confirm setup** — project has `components.json`; `@ikui` registry is declared (add it if not). Note the package runner.
-2. **List, don't guess** — read the injected manifest above (or fetch `registry.json`) to get current names, types, categories, and descriptions.
+2. **List, don't guess** — fetch `registry.json` (see "Current Components" above) to get current names, types, categories, and descriptions.
 3. **Pick the right grain** — a `block` for a finished feature, `component` primitives to build something custom. Don't reimplement a primitive that already exists.
 4. **Add** — `npx shadcn@latest add @ikui/<name>` (or full URL). Use `--dry-run` to preview.
 5. **Review the written files** — confirm imports resolve to the project's aliases, `"use client"` is present where needed, and transitive deps landed. Read the component's source/props before wiring it up rather than guessing the API.
