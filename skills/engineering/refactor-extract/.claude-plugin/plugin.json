@@ -1,6 +1,6 @@
 {
   "name": "refactor-extract",
-  "version": "2026.05.07",
+  "version": "2026.08.09",
   "description": "Sink shared logic from multiple call sites into a shared module (utils package, common helper, shared lib). Walks the should-we-extract decision, the two-commit pattern, and when to NOT refactor.",
   "author": {
     "name": "wudi"

@@ -1,9 +1,9 @@
 ---
 name: refactor-extract
-description: Sink shared logic from multiple call sites into a shared module (utils package, common helper, shared lib). Trigger when the user wants to "extract this", "DRY this up", "consolidate this duplication", "sink this into a shared package", "pull this out into utils", or otherwise move duplicated code from N call sites into one home. Walks: confirm worth extracting (≥2 callers, no caller-specific state), decide the shape, two-commit pattern (extract + migrate), verify per consumer, when to NOT refactor. Skip for in-app file reorganisation that doesn't cross a module/package boundary, and skip for shallow duplication (3 near-identical lines is not worth abstracting).
+description: Sink shared logic from multiple call sites into a shared module (utils package, common helper, shared lib). Trigger when the user wants to "extract this", "DRY this up", "consolidate this duplication", "sink this into a shared package", "pull this out into utils", or otherwise move duplicated code from N call sites into one home. Walks — confirm worth extracting (≥2 callers, no caller-specific state), decide the shape, two-commit pattern (extract + migrate), verify per consumer, when to NOT refactor. Skip for in-app file reorganisation that doesn't cross a module/package boundary, and skip for shallow duplication (3 near-identical lines is not worth abstracting).
 metadata:
   author: wudi
-  version: "2026.05.07"
+  version: "2026.08.09"
   source: https://github.com/WuChenDi/skills
 ---
 
