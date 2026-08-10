@@ -40,14 +40,14 @@ If the user gave you a 3-paragraph spec but the change is small, it's still wort
 
 ### Workers (Hono)
 
-Reference apps for the patterns below: `byplay-log` (minimal), `dropply-api` (full middleware + Drizzle + cron + email), `shortener` (KV + AI + analytics + JWT), `live-user` (Durable Object + WebSocket hibernation), `baccarat` (Durable Object + game state).
+Reference apps for the patterns below: `byplay-log` (minimal), `dropply-api` (full middleware + Drizzle + cron + email), `live-user` (Durable Object + WebSocket hibernation), `baccarat` (Durable Object + game state). For KV + Analytics Engine + cron on a Next-on-Cloudflare app, see `flnk`.
 
 - **Route file** under `src/routes/<group>.ts`, composed via `src/routes/index.ts`. Pattern: `dropply-api/src/routes/`.
 - **Validation** via `@hono/zod-validator`. Schemas next to the route, or `src/lib/validationSchemas.ts` if shared (see `dropply-api`).
 - **DB**: Drizzle, filtered by `eq(table.isDeleted, false)`. Never `db.delete()`.
 - **New env var**: add to `wrangler.jsonc` `vars`, `.env.example`, and (if the app has a typed `createConfig(env)`) `src/types.ts`. `baccarat/src/types.ts` is the reference for the typed config pattern.
 - **New error**: throw `HTTPException` with status; the global `onError` formats it.
-- **Cron**: function under `src/cron/`, wired from `scheduled()` in `src/index.ts`. Schedule in `wrangler.jsonc` `triggers.crons`. See `dropply-api/src/cron/cleanup.ts` and `shortener/src/cron/cleanup.ts`.
+- **Cron**: function under `src/cron/`, wired from `scheduled()` in `src/index.ts`. Schedule in `wrangler.jsonc` `triggers.crons`. See `dropply-api/src/cron/cleanup.ts` (and `flnk/src/lib/data/cleanup.ts` for the KV-purging variant).
 - **Durable Object**: new class file under `src/durable-objects/<name>.ts`, registered in `wrangler.jsonc` `durable_objects.bindings` and `migrations`. SQLite-backed DOs use `new_sqlite_classes` migrations.
   - Game-state DO with embedded SQLite: see `baccarat/src/durable-objects/game-room.ts`.
   - WebSocket-hibernation DO: see `live-user/src/site-manager.ts` — uses `ctx.acceptWebSocket(server)` so the DO unloads when idle. **Watch out**: `webSocketClose` is called *after* the socket is already closed; never call `ws.close()` from there or it throws.
@@ -76,12 +76,12 @@ Reference apps: `SecureC` and `dropply-web` (i18n, layout pattern), `flox` (sing
 ## Step 5 — Verify
 
 ```bash
-pnpm --filter @cdlab996/<app> typecheck
-pnpm --filter @cdlab996/<app> lint
-pnpm --filter @cdlab996/<app> dev      # boot once, exercise the new path
+pnpm --filter @cdlab/<app> typecheck
+pnpm --filter @cdlab/<app> lint
+pnpm --filter @cdlab/<app> dev      # boot once, exercise the new path
 ```
 
-For Workers, also `pnpm --filter @cdlab996/<app> build` to catch issues that `wrangler dev` doesn't surface (e.g. unused exports the bundler complains about).
+For Workers, also `pnpm --filter @cdlab/<app> build` to catch issues that `wrangler dev` doesn't surface (e.g. unused exports the bundler complains about).
 
 If the app has tests for the area you touched, run them. If it doesn't and the feature has non-trivial logic, **add a test** — even a single one — at the boundary you most worry about. (Test infrastructure: vitest + happy-dom for browser-side, vitest in Node for Workers logic.)
 

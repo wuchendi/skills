@@ -1,4 +1,4 @@
-import { Toaster } from '@cdlab996/ui/components/sonner'
+import { Toaster } from '@cdlab/ui/components/sonner'
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { notFound } from 'next/navigation'
@@ -6,7 +6,7 @@ import type { Locale } from 'next-intl'
 import { hasLocale, NextIntlClientProvider } from 'next-intl'
 import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server'
 
-import '@cdlab996/ui/globals.css'
+import '@cdlab/ui/globals.css'
 import { ClientProviders, Footer, Header } from '@/components/layout'
 import { routing } from '@/i18n/routing'
 

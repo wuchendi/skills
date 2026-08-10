@@ -3,13 +3,15 @@ name: cdlab-projects
 description: Personal maintenance skill for the cdlab projects-monorepo (https://github.com/WuChenDi/projects). Trigger when working in that repo — or a new repo that clones its style — and the user wants to scaffold a new app/package (Next.js / Cloudflare Workers + Hono / Nuxt 4), bump pnpm catalog or wrangler compatibility_date, sink shared logic into packages/, add a feature to an existing app, self-review before commit/PR, or sync CLAUDE.md / README. Skip for one-off scripts or unrelated codebases.
 metadata:
   author: wudi
-  version: "2026.06.13"
+  version: "2026.08.10"
   source: https://github.com/WuChenDi/skills
 ---
 
 # cdlab-projects
 
-Maintenance skill for the cdlab projects-monorepo. Anchored to the real apps in the repo — `baccarat`, `byplay-log`, `dropply-api/web`, `flox`, `SecureC`, `shortener`, etc. — so guidance points at concrete reference implementations instead of inventing abstract patterns.
+Maintenance skill for the cdlab projects-monorepo. Anchored to the real apps in the repo — `baccarat`, `byplay-log`, `dropply-api/web`, `flnk`, `flox`, `SecureC`, `wepush`, etc. — so guidance points at concrete reference implementations instead of inventing abstract patterns.
+
+**Reference impls named here can be renamed or retired upstream.** Before citing one, confirm it still exists (`ls $ROOT/apps`). If it's gone, find the closest current equivalent rather than describing the dead one.
 
 This file is the **router and style cheatsheet**. Detailed steps live in `references/*.md`, templates in `assets/`. Read those *only when the relevant intent fires*.
 
@@ -45,6 +47,8 @@ Then read these (only when relevant), without echoing them back:
 - `turbo.json` — task pipeline
 - `CLAUDE.md` if present — defer to its specifics on top of this skill's defaults
 
+**This skill ships no copies of those files, by design.** Versions, lint rules and TS options are read from the workspace at use time — never quoted from this skill or from memory. `references/stack.md` has the full "which file answers which question" table, including how to get a copy when you're not inside the monorepo.
+
 ## Step 3 — Style cheatsheet (always-on)
 
 These rules apply to **every** edit unless the project's `CLAUDE.md` says otherwise. They mirror the cdlab projects baseline.
@@ -63,12 +67,12 @@ These rules apply to **every** edit unless the project's `CLAUDE.md` says otherw
 
 - Versions live in **`pnpm-workspace.yaml` catalogs** (`prod` for runtime, `dev` for tooling). Reference as `"react": "catalog:prod"`.
 - Only put a literal version in a package's `package.json` when the dep isn't in the catalog — and consider whether it should be added to the catalog instead.
-- Cross-package imports use `"@cdlab996/<name>": "workspace:*"`.
+- Cross-package imports use `"@cdlab/<name>": "workspace:*"`.
 - **Never** install a dep with a different version than the catalog already has — bump the catalog instead.
 
 ### Naming & metadata
 
-- Workspace package name pattern: `@cdlab996/<kebab-name>`.
+- Workspace package name pattern: `@cdlab/<kebab-name>`.
 - Every `package.json` has `author: "wudi <wuchendi96@gmail.com>"`, `license: MIT`, `homepage: https://github.com/WuChenDi`, `repository.url: https://github.com/WuChenDi/projects.git`, and `repository.directory: <apps|packages>/<name>`.
 - Apps and packages set `"type": "module"` and `"private": true`.
 
@@ -85,11 +89,11 @@ These rules apply to **every** edit unless the project's `CLAUDE.md` says otherw
 
 ### Workers (Hono)
 
-Reference impl: `byplay-log/src/index.ts` (canonical minimal Worker). For more complex setups: `dropply-api` (full middleware + Drizzle + cron + email), `shortener` (KV + AI + analytics), `live-user`/`baccarat` (Durable Objects).
+Reference impl: `byplay-log/src/index.ts` (canonical minimal Worker). For more complex setups: `dropply-api` (full middleware + Drizzle + cron + email), `live-user`/`baccarat` (Durable Objects). Note `flnk` and `wepush` are Next-on-Cloudflare apps — their `src/worker/index.ts` is an OpenNext wrapper, not a Hono entry; don't copy Worker structure from them.
 
 - Middleware order: `accesslog → prettyJSON → requestId → cors`. Copy from `byplay-log`.
 - `src/global.ts` sets `globalThis.logger` and `globalThis.isDebug`; side-effect import in `src/index.ts` (`import './global'`).
-- Error envelope: `{ statusCode, message, stack? }` (`stack` only when `isDebug`); 404 is the same minus `stack`. Reference impl: `dropply-api/src/index.ts`. The field is **not** uniform across the fleet — `byplay-log` uses `code`, `shortener` emits both `code` + `statusCode` for legacy clients. Prefer `statusCode` for new Workers; only mirror `code` if a client depends on it.
+- Error envelope: `{ statusCode, message, stack? }` (`stack` only when `isDebug`); 404 is the same minus `stack`. Reference impl: `dropply-api/src/index.ts`. The field is **not** uniform across the fleet — `byplay-log` uses `code`. Prefer `statusCode` for new Workers; only mirror `code` if a client depends on it.
 - Routes: one `src/routes/<group>.ts` per group, composed via `src/routes/index.ts`.
 - `wrangler.jsonc` `compatibility_date` bumped per quarter — see `deps-upgrade.md`.
 
@@ -98,19 +102,19 @@ Reference impl: `byplay-log/src/index.ts` (canonical minimal Worker). For more c
 - Schema in `src/database/schema.ts`. Migrations live in `src/database/` (NOT `drizzle/`).
 - `DB_TYPE` env (`libsql` default, or `d1`) selects dialect at config time. `LIBSQL_URL` defaults to `file:./src/database/data.db`.
 - Every table has the shared `trackingFields` block: `createdAt`, `updatedAt` (auto via `$onUpdateFn`), `isDeleted` (default 0). **Never hard-delete** — filter with `eq(table.isDeleted, 0)`.
-- IDs: UUID v4 (or `@cdlab996/genid`); auto-increment only when ordering matters (e.g. `playerLogs`).
+- IDs: UUID v4 (or `@cdlab/driftflake`); auto-increment only when ordering matters (e.g. `playerLogs`).
 
 ### Commits
 
-- Conventional Commits: `feat`, `fix`, `refactor`, `chore`, `docs`, `build`, `test`. Optional scope: `feat(shortener): …`, `chore(deps): …`.
+- Conventional Commits: `feat`, `fix`, `refactor`, `chore`, `docs`, `build`, `test`. Optional scope: `feat(flnk): …`, `chore(deps): …`.
 - English only in commit messages, PR titles, PR bodies, and any other remote-visible Git metadata. No mention of AI assistants or model names.
 
 ## Step 4 — Verify before declaring done
 
 Match the verification to the intent. Don't claim a task is finished without at least one of these passing:
 
-- **New app/package**: `pnpm install` succeeds, then `pnpm --filter @cdlab996/<name> typecheck` (and `lint` / `build` if defined). For a new Worker, also `pnpm --filter @cdlab996/<name> cf-typegen`.
-- **Dep upgrade**: `pnpm install` clean, then `pnpm lint:biome && pnpm build` at the root, plus `pnpm --filter @cdlab996/<changed-pkg> test` if tests exist.
+- **New app/package**: `pnpm install` succeeds, then `pnpm --filter @cdlab/<name> typecheck` (and `lint` / `build` if defined). For a new Worker, also `pnpm --filter @cdlab/<name> cf-typegen`.
+- **Dep upgrade**: `pnpm install` clean, then `pnpm lint:biome && pnpm build` at the root, plus `pnpm --filter @cdlab/<changed-pkg> test` if tests exist.
 - **Refactor**: typecheck on every consumer + tests on the moved code (especially anything in `packages/utils` or `packages/cipher`).
 - **New feature**: typecheck + lint on the touched app, plus a manual smoke test path (Workers: `nsl run wrangler dev` + curl the new route; Next: load the page).
 - **Code review**: `pnpm lint:biome` (root), then `pnpm --filter <changed> typecheck`. Surface any catalog drift or ad-hoc versions.

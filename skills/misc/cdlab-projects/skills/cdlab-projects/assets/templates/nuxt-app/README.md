@@ -21,7 +21,7 @@ find . -type f \( -name '*.ts' -o -name '*.vue' -o -name '*.json' \) -exec \
 ## After creating
 
 1. `pnpm install`
-2. `pnpm --filter @cdlab996/<app-name> dev` (boots at `http://<app-name>.localhost:3355`)
+2. `pnpm --filter @cdlab/<app-name> dev` (boots at `http://<app-name>.localhost:3355`)
 
 ## Adding to the workspace
 

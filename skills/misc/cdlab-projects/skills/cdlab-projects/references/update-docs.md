@@ -48,7 +48,7 @@ Most architectural changes update **`CLAUDE.md`**. README changes are usually on
    ### Nuxt 4 app
       #### <app-name>
    ### Shared packages
-      #### @cdlab996/<pkg>
+      #### @cdlab/<pkg>
 ## Conventions                   — lint, deps, i18n, IDs, soft-delete, API envelope, misc
 ```
 
@@ -130,7 +130,7 @@ docs: <what you updated and why, in 1 line>
 Examples:
 
 ```
-docs(claude): document new shortener route group
+docs(claude): document new flnk route group
 docs(readme): add ByTTS to applications list
 docs(conventions): clarify catalog vs literal version policy
 ```

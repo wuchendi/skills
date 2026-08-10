@@ -1,5 +1,5 @@
 {
-  "name": "@cdlab996/__APP_NAME__",
+  "name": "@cdlab/__APP_NAME__",
   "type": "module",
   "version": "0.1.0",
   "private": true,
@@ -28,7 +28,7 @@
     "vue": "^3.5.31"
   },
   "devDependencies": {
-    "@cdlab996/tsconfig": "workspace:*",
+    "@cdlab/tsconfig": "workspace:*",
     "@types/node": "catalog:dev",
     "tailwindcss": "catalog:dev",
     "typescript": "catalog:dev",

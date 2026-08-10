@@ -12,13 +12,15 @@ Run in this order; stop on first hard failure and fix the root cause:
 
 ```bash
 pnpm lint:biome                                          # root, full repo
-pnpm --filter @cdlab996/<changed-pkg-or-app> typecheck   # per touched workspace
-pnpm --filter @cdlab996/<changed-pkg-or-app> lint        # if app has its own lint
-pnpm --filter @cdlab996/<changed-pkg-or-app> test        # if tests exist
-pnpm --filter @cdlab996/<changed-pkg-or-app> build       # final smoke
+pnpm --filter @cdlab/<changed-pkg-or-app> typecheck   # per touched workspace
+pnpm --filter @cdlab/<changed-pkg-or-app> lint        # if app has its own lint
+pnpm --filter @cdlab/<changed-pkg-or-app> test        # if tests exist
+pnpm --filter @cdlab/<changed-pkg-or-app> build       # final smoke
 ```
 
 Turbo skips unaffected packages, so multi-filter runs are cheap.
+
+If the change touches this skill itself (not the monorepo), also run `bash scripts/check-cdlab-drift.sh` from the skills repo — it catches references to apps that upstream has retired.
 
 If a Biome rule fails, **fix the code, not the rule**. Don't add `// biome-ignore` lines unless there's a genuine reason (and write the reason in the comment).
 
@@ -37,14 +39,14 @@ Eyeball these in the diff (Biome catches most, not all):
 
 - [ ] No new literal version pin for a dep that already lives in the catalog (`pnpm-workspace.yaml`).
 - [ ] If a dep is added to one app's `package.json`, would another app likely want it too? If yes, promote to catalog now.
-- [ ] Cross-package import uses `"@cdlab996/<name>": "workspace:*"`, not a literal version.
+- [ ] Cross-package import uses `"@cdlab/<name>": "workspace:*"`, not a literal version.
 - [ ] If a `packages/*` library was edited, was it rebuilt? (`pnpm prepare` or per-package `build`.)
 
 ## cdlab-specific architecture checks
 
 - [ ] New code lives in the right layer (Workers: `src/routes/` `src/lib/` `src/cron/`; Next: `src/components/<feature>/` `src/stores/<feature>-store.ts` `src/lib/`).
 - [ ] No app-specific logic leaked into `packages/utils` or `packages/ui` (they stay app-agnostic).
-- [ ] No duplicated helper that already exists in `@cdlab996/utils` / `@cdlab996/ui`.
+- [ ] No duplicated helper that already exists in `@cdlab/utils` / `@cdlab/ui`.
 - [ ] If a Worker touches the DB: filtered by `eq(table.isDeleted, false)`. **Never** `db.delete()` — soft-delete on writes.
 - [ ] If a Next app uses i18n (next-intl): every new string has keys in **both** `messages/en.json` and `messages/zh.json`.
 - [ ] New env vars declared in `wrangler.jsonc` `vars` (with placeholder), `.env.example`, and `src/types.ts` if the app has a typed `createConfig`.
@@ -64,7 +66,7 @@ When walking the Step 4 missing-co-changes scan from `pre-pr-review`, check thes
 ## cdlab-specific commit conventions
 
 - Subject in **Conventional Commits** form (`feat`, `fix`, `chore`, `refactor`, `docs`, `build`, `test`).
-- Scope (when meaningful) is the app or package: `feat(shortener): …`, `chore(deps): …`.
+- Scope (when meaningful) is the app or package: `feat(flnk): …`, `chore(deps): …`.
 - Subject imperative, English, ≤ 72 chars.
 - **No mention of AI assistants / model names / `Co-authored-by` trailers** — git policy across this repo's history.
 

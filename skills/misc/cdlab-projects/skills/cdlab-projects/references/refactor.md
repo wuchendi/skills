@@ -37,18 +37,18 @@ Recent extraction precedent: the `download` folder consolidated logic that used 
 
 1. Create the new file under `packages/utils/src/<capability>/<name>.ts`.
 2. Add tests next to it (`<name>.test.ts`) using **vitest**.
-3. Re-export from `packages/utils/src/index.ts` so consumers can `import { x } from '@cdlab996/utils'`. (If subpath exports are configured, also re-export from the subpath barrel.)
-4. Build the package: `pnpm --filter @cdlab996/utils build` (or `dev --watch` if you'll iterate).
-5. In each consumer app, replace the local copy with `import { x } from '@cdlab996/utils'`.
-6. Delete the now-unused local file. Run `pnpm --filter @cdlab996/<app> typecheck` to confirm no orphaned imports.
+3. Re-export from `packages/utils/src/index.ts` so consumers can `import { x } from '@cdlab/utils'`. (If subpath exports are configured, also re-export from the subpath barrel.)
+4. Build the package: `pnpm --filter @cdlab/utils build` (or `dev --watch` if you'll iterate).
+5. In each consumer app, replace the local copy with `import { x } from '@cdlab/utils'`.
+6. Delete the now-unused local file. Run `pnpm --filter @cdlab/<app> typecheck` to confirm no orphaned imports.
 
 ### A3 — cdlab-specific verification
 
 ```bash
-pnpm --filter @cdlab996/utils test
-pnpm --filter @cdlab996/utils build
-pnpm --filter @cdlab996/<consumer-1> typecheck
-pnpm --filter @cdlab996/<consumer-2> typecheck
+pnpm --filter @cdlab/utils test
+pnpm --filter @cdlab/utils build
+pnpm --filter @cdlab/<consumer-1> typecheck
+pnpm --filter @cdlab/<consumer-2> typecheck
 pnpm lint:biome
 pnpm build
 ```
@@ -59,7 +59,7 @@ Two commits, in this order:
 
 ```
 refactor(utils): extract <name> from <app1>, <app2>
-refactor(<app1>, <app2>): consume <name> from @cdlab996/utils
+refactor(<app1>, <app2>): consume <name> from @cdlab/utils
 ```
 
 (In practice the repo sometimes squashes these into one commit. Use judgment; if the diff is small, one commit is fine.)
@@ -90,15 +90,15 @@ A pure rename / move should land in **one commit per logical group**, with no be
 ### B3 — Update imports atomically
 
 - Use the editor's "rename file" / "move file" rather than `git mv` + manual import edits when possible.
-- After every move, run `pnpm --filter @cdlab996/<app> typecheck` before continuing. Don't accumulate broken intermediate states.
+- After every move, run `pnpm --filter @cdlab/<app> typecheck` before continuing. Don't accumulate broken intermediate states.
 
 ### B4 — Verify
 
 ```bash
-pnpm --filter @cdlab996/<app> typecheck
-pnpm --filter @cdlab996/<app> lint
-pnpm --filter @cdlab996/<app> build
-pnpm --filter @cdlab996/<app> dev    # boot once and exercise the path
+pnpm --filter @cdlab/<app> typecheck
+pnpm --filter @cdlab/<app> lint
+pnpm --filter @cdlab/<app> build
+pnpm --filter @cdlab/<app> dev    # boot once and exercise the path
 ```
 
 ### B5 — Commit shape
@@ -137,16 +137,16 @@ If the component pulls from an app's Zustand store or makes API calls, it doesn'
 import { Button } from '@/components/ui/button'
 
 // after:
-import { Button } from '@cdlab996/ui/components/button'
+import { Button } from '@cdlab/ui/components/button'
 ```
 
-`packages/ui` has no build step — consumers pick up the new file the moment it lands (subject to the consuming app's bundler reading `node_modules/@cdlab996/ui/src/`, which is configured by `paths` in tsconfig).
+`packages/ui` has no build step — consumers pick up the new file the moment it lands (subject to the consuming app's bundler reading `node_modules/@cdlab/ui/src/`, which is configured by `paths` in tsconfig).
 
 ### C4 — Verify and commit
 
 ```bash
-pnpm --filter @cdlab996/<consumer-1> typecheck
-pnpm --filter @cdlab996/<consumer-2> typecheck
+pnpm --filter @cdlab/<consumer-1> typecheck
+pnpm --filter @cdlab/<consumer-2> typecheck
 pnpm build
 ```
 
@@ -158,6 +158,6 @@ refactor(ui): consolidate <Component> into shared library
 
 ## cdlab-specific common pitfalls
 
-- **Forgetting to rebuild `packages/utils`** after editing — consumers pull stale `dist/` until you do (`pnpm --filter @cdlab996/utils build`).
+- **Forgetting to rebuild `packages/utils`** after editing — consumers pull stale `dist/` until you do (`pnpm --filter @cdlab/utils build`).
 - Moving a Biome-excluded file (`packages/ui/src/components/*` shadcn vendored) and accidentally lint-formatting it — keep the original style.
 - Sinking a UI component that still touches a Zustand store or fetcher — `packages/ui` is presentational only.

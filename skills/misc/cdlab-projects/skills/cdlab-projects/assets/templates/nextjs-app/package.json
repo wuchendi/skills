@@ -1,5 +1,5 @@
 {
-  "name": "@cdlab996/__APP_NAME__",
+  "name": "@cdlab/__APP_NAME__",
   "type": "module",
   "version": "0.1.0",
   "private": true,
@@ -22,8 +22,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@cdlab996/ui": "workspace:*",
-    "@cdlab996/utils": "workspace:*",
+    "@cdlab/ui": "workspace:*",
+    "@cdlab/utils": "workspace:*",
     "@next/third-parties": "catalog:prod",
     "class-variance-authority": "catalog:prod",
     "clsx": "catalog:prod",
@@ -36,7 +36,7 @@
     "sonner": "catalog:prod"
   },
   "devDependencies": {
-    "@cdlab996/tsconfig": "workspace:*",
+    "@cdlab/tsconfig": "workspace:*",
     "@types/node": "catalog:dev",
     "@types/react": "catalog:dev",
     "@types/react-dom": "catalog:dev",

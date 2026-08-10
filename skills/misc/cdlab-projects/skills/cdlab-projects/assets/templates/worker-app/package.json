@@ -1,5 +1,5 @@
 {
-  "name": "@cdlab996/__APP_NAME__",
+  "name": "@cdlab/__APP_NAME__",
   "type": "module",
   "version": "0.1.0",
   "private": true,
@@ -36,7 +36,7 @@
     "zod": "catalog:prod"
   },
   "devDependencies": {
-    "@cdlab996/tsconfig": "workspace:*",
+    "@cdlab/tsconfig": "workspace:*",
     "@cloudflare/workers-types": "catalog:dev",
     "@types/node": "catalog:dev",
     "drizzle-kit": "catalog:dev",

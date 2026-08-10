@@ -12,7 +12,7 @@ Modeled after `apps/SecureC` (i18n) and `apps/flox` (layout assembly).
 - **Themed background** — gradient backdrop that switches with theme, lifted from the existing apps
 - **Error / 404 pages** — both at root (passthrough) and `[locale]` (translated)
 - **Static export to Cloudflare Pages** — `output: 'export'` plus `build:cf` script for `next-on-pages`
-- **shadcn/ui wired in** — `components.json` already aliased to `@cdlab996/ui/components`
+- **shadcn/ui wired in** — `components.json` already aliased to `@cdlab/ui/components`
 
 ## Placeholders to replace
 
@@ -36,8 +36,8 @@ find . -type f \( -name '*.ts' -o -name '*.tsx' -o -name '*.json' -o -name '*.mj
 
 ```bash
 pnpm install
-pnpm --filter @cdlab996/<app-name> typecheck
-pnpm --filter @cdlab996/<app-name> dev
+pnpm --filter @cdlab/<app-name> typecheck
+pnpm --filter @cdlab/<app-name> dev
 ```
 
 Open `http://<app-name>.localhost:3355` — `/` redirects to `/en`.

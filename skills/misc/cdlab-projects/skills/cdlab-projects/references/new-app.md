@@ -23,7 +23,7 @@ If the user is uncertain, ask one clarifying question (e.g. "Does it need a serv
 Decide the app name early; everything depends on it.
 
 - **Directory**: `apps/<app-name>` (kebab-case).
-- **Workspace name**: `@cdlab996/<app-name>`.
+- **Workspace name**: `@cdlab/<app-name>`.
 - **Dev URL**: `http://<app-name>.localhost:3355` (set automatically by `nsl`).
 - **Worker name** (CF Workers only): same as the directory; lives in `wrangler.jsonc` `name` field.
 
@@ -59,16 +59,16 @@ Then read the template's own README (it lists exactly which placeholders exist a
 
 ```bash
 pnpm install
-pnpm --filter @cdlab996/<app-name> typecheck
-pnpm --filter @cdlab996/<app-name> lint        # if a lint script exists
-pnpm --filter @cdlab996/<app-name> build       # smoke build
-pnpm --filter @cdlab996/<app-name> dev         # boot dev server, hit the URL once
+pnpm --filter @cdlab/<app-name> typecheck
+pnpm --filter @cdlab/<app-name> lint        # if a lint script exists
+pnpm --filter @cdlab/<app-name> build       # smoke build
+pnpm --filter @cdlab/<app-name> dev         # boot dev server, hit the URL once
 ```
 
 For a Worker, additionally:
 
 ```bash
-pnpm --filter @cdlab996/<app-name> cf-typegen
+pnpm --filter @cdlab/<app-name> cf-typegen
 ```
 
 Don't claim done before at least typecheck + dev-boot pass.
@@ -88,8 +88,8 @@ Use the same level of detail as neighboring sections — terse, architectural, n
 
 - **Ships with i18n (en/zh) and a complete `src/components/layout/*` set by default** — `Header`, `Footer`, `ClientProviders`, `ThemeProvider`, `ThemeToggle`, `LanguageSelector`. Modeled after `apps/SecureC` (i18n) and `apps/flox` (layout assembly).
 - Default is **static export** (`output: 'export'`) deploying to Cloudflare Pages. Drop `output: 'export'` if you need SSR or route handlers.
-- Tailwind v4 comes via `@cdlab996/ui/globals.css` (imported once in `app/[locale]/layout.tsx`). PostCSS config is `export { default } from '@cdlab996/ui/postcss.config'`.
-- shadcn/ui components live in `@cdlab996/ui/components/<name>` — never copy a component into the app; add it to the shared package.
+- Tailwind v4 comes via `@cdlab/ui/globals.css` (imported once in `app/[locale]/layout.tsx`). PostCSS config is `export { default } from '@cdlab/ui/postcss.config'`.
+- shadcn/ui components live in `@cdlab/ui/components/<name>` — never copy a component into the app; add it to the shared package.
 - **i18n on by default**: routes live under `app/[locale]/`, `middleware.ts` is the next-intl middleware, `messages/{en,zh}.json` are seeded with `theme/language/header/footer/home/error/notFound/seo` keys. Add `apps/<name>/messages` to `i18n-ally.localesPaths` in `.vscode/settings.json` after scaffolding.
 - **Need a single-locale app?** The template README has a precise deletion checklist (drop `src/i18n`, `src/middleware.ts`, `src/app/[locale]`, `messages/`, the `next-intl` import in `next.config.ts` and dep, the `useTranslations` calls in `Header` / `ThemeToggle`, and the `LanguageSelector` component). The result mirrors `apps/flox` — same layout, no locale routing.
 - If you hit Turbopack issues with wasm + workers, switch the build script to `next build --webpack` (see `clearify`/`flox`).

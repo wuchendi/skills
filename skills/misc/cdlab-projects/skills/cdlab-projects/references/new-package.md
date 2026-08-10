@@ -6,10 +6,10 @@ Use this when the user wants to add a new shared package under `packages/`.
 
 Default to **extending an existing package** unless you have a clear reason:
 
-- New helper that's logically generic → `@cdlab996/utils` (add a module, re-export from `src/index.ts`)
-- New shadcn/ui component or hook → `@cdlab996/ui` (drop the file in `src/components/` or `src/hooks/`; consumers import via subpath)
-- New TypeScript config preset → `@cdlab996/tsconfig` (add a JSON file extending `base.json`)
-- Crypto primitive used in multiple apps → `@cdlab996/cipher`
+- New helper that's logically generic → `@cdlab/utils` (add a module, re-export from `src/index.ts`)
+- New shadcn/ui component or hook → `@cdlab/ui` (drop the file in `src/components/` or `src/hooks/`; consumers import via subpath)
+- New TypeScript config preset → `@cdlab/tsconfig` (add a JSON file extending `base.json`)
+- Crypto primitive used in multiple apps → `@cdlab/cipher`
 
 Make a **new package** only when:
 
@@ -26,7 +26,7 @@ Two profiles cover almost every case:
 | Profile             | When to pick                                                                | Template                        |
 |---------------------|-----------------------------------------------------------------------------|---------------------------------|
 | **Built (`tsdown`)** | Library code consumed by Workers/Node and browsers; needs a `dist/` ship   | `assets/templates/package`      |
-| **Source-only**     | React UI library or hooks, where consumers want raw TSX (like `@cdlab996/ui`) | (no template — mirror `packages/ui` if it exists) |
+| **Source-only**     | React UI library or hooks, where consumers want raw TSX (like `@cdlab/ui`) | (no template — mirror `packages/ui` if it exists) |
 
 Default is **built**. Ask only if it's not obvious.
 
@@ -40,13 +40,13 @@ cd packages/<pkg-name>
 #   __PKG_DESCRIPTION__  → "<one-line>"
 ```
 
-The package name is `@cdlab996/<pkg-name>` (kebab-case, no `pkg` suffix or similar — just the bare name).
+The package name is `@cdlab/<pkg-name>` (kebab-case, no `pkg` suffix or similar — just the bare name).
 
 ## Step 3 — Decide entry points
 
 Open `tsdown.config.ts` and set `entry`:
 
-- **Single entry** (most cases): `entry: ['src/index.ts']`. Consumers `import { … } from '@cdlab996/<name>'`.
+- **Single entry** (most cases): `entry: ['src/index.ts']`. Consumers `import { … } from '@cdlab/<name>'`.
 - **Multiple entries** (runtime-split, e.g. `crypto.node.ts` / `crypto.web.ts` like `uncrypto`): list them all and configure `exports` in `package.json` with `browser` / `node` / `default` conditions.
 - **Subpath exports** (like `utils/format`, `utils/download`): list each entry and add a matching `exports` map.
 
@@ -54,11 +54,11 @@ Match the `package.json` `main` / `module` / `types` / `browser` fields to whate
 
 ## Step 4 — TypeScript config
 
-The template extends `@cdlab996/tsconfig/utils.json`. If the package is React-flavored, switch to `@cdlab996/tsconfig/react-library.json` instead.
+The template extends `@cdlab/tsconfig/utils.json`. If the package is React-flavored, switch to `@cdlab/tsconfig/react-library.json` instead.
 
 ```jsonc
 {
-  "extends": "@cdlab996/tsconfig/utils.json",
+  "extends": "@cdlab/tsconfig/utils.json",
   "include": ["."],
   "exclude": ["node_modules", "dist"]
 }
@@ -80,9 +80,9 @@ Keep `include: ["."]` — it lets vitest pick up `test/**` without extra configu
 
 ```bash
 pnpm install                                   # `prepare` will build the new package
-pnpm --filter @cdlab996/<pkg-name> typecheck
-pnpm --filter @cdlab996/<pkg-name> test
-pnpm --filter @cdlab996/<pkg-name> build       # explicit, to verify dist/ is correct
+pnpm --filter @cdlab/<pkg-name> typecheck
+pnpm --filter @cdlab/<pkg-name> test
+pnpm --filter @cdlab/<pkg-name> build       # explicit, to verify dist/ is correct
 ```
 
 Open `dist/` and check the entry shapes match `exports` in `package.json`. A wrong `dist/` layout is the most common bug here.
@@ -94,15 +94,15 @@ Once published into the workspace, an app consumes it via:
 ```jsonc
 // apps/<app>/package.json
 "dependencies": {
-  "@cdlab996/<pkg-name>": "workspace:*"
+  "@cdlab/<pkg-name>": "workspace:*"
 }
 ```
 
-Then `import { … } from '@cdlab996/<pkg-name>'`. After editing the package, rebuild it (`pnpm --filter @cdlab996/<pkg-name> build` or `dev --watch`) so consumers see the new symbols.
+Then `import { … } from '@cdlab/<pkg-name>'`. After editing the package, rebuild it (`pnpm --filter @cdlab/<pkg-name> build` or `dev --watch`) so consumers see the new symbols.
 
 ## Step 9 — Update CLAUDE.md (if it exists)
 
-Add a `#### @cdlab996/<pkg-name>` subsection under `### Shared packages` describing:
+Add a `#### @cdlab/<pkg-name>` subsection under `### Shared packages` describing:
 
 - Public API (named exports / classes)
 - Whether it's built (`tsdown`) or source-only
@@ -116,4 +116,4 @@ Don't dump the full README in there — keep it terse and architectural.
 - Missing `build` script — `pnpm prepare` skips the package, consumers fail to resolve.
 - Mismatched `exports` and `main` — bundlers may pick the legacy `main` and miss conditional exports. Set both consistently.
 - Runtime deps in `devDependencies` — consumers won't install them.
-- Suffixed names like `@cdlab996/<name>-utils` — drop the suffix, use the bare `@cdlab996/<name>`.
+- Suffixed names like `@cdlab/<name>-utils` — drop the suffix, use the bare `@cdlab/<name>`.
