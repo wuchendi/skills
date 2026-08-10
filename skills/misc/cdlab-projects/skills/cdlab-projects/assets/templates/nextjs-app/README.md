@@ -2,7 +2,7 @@
 
 Next.js (App Router) app skeleton in cdlab projects style. **Ships with i18n (en/zh) and a complete `src/components/layout/*` set by default**, so you can drop in and start writing business code without re-wiring locale, theme, header, footer, etc.
 
-Modeled after `apps/SecureC` (i18n) and `apps/flox` (layout assembly).
+Modeled after `apps/dropply-web` (i18n) and `apps/flox` (layout assembly).
 
 ## What you get
 

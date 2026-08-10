@@ -17,7 +17,7 @@ Look for:
 - **Dependencies already present** — if the app uses `@tanstack/react-query`, don't bring in a second data-fetcher. If it uses `@hono/zod-validator`, write your route validator with it, not bare zod.
 - **Existing patterns for similar features** — there's almost always a precedent. Copy it.
 
-If the app has none of this and is genuinely small, fall back to the conventions in `references/conventions.md`.
+If the app has none of this and is genuinely small, fall back to the style cheatsheet in `SKILL.md` and the shape rules in `references/stack.md`.
 
 ## Step 2 — Plan the change in one sentence each
 
@@ -44,7 +44,7 @@ Reference apps for the patterns below: `byplay-log` (minimal), `dropply-api` (fu
 
 - **Route file** under `src/routes/<group>.ts`, composed via `src/routes/index.ts`. Pattern: `dropply-api/src/routes/`.
 - **Validation** via `@hono/zod-validator`. Schemas next to the route, or `src/lib/validationSchemas.ts` if shared (see `dropply-api`).
-- **DB**: Drizzle, filtered by `eq(table.isDeleted, false)`. Never `db.delete()`.
+- **DB**: Drizzle, filtered by `eq(table.isDeleted, 0)`. Never `db.delete()`.
 - **New env var**: add to `wrangler.jsonc` `vars`, `.env.example`, and (if the app has a typed `createConfig(env)`) `src/types.ts`. `baccarat/src/types.ts` is the reference for the typed config pattern.
 - **New error**: throw `HTTPException` with status; the global `onError` formats it.
 - **Cron**: function under `src/cron/`, wired from `scheduled()` in `src/index.ts`. Schedule in `wrangler.jsonc` `triggers.crons`. See `dropply-api/src/cron/cleanup.ts` (and `flnk/src/lib/data/cleanup.ts` for the KV-purging variant).
@@ -52,10 +52,11 @@ Reference apps for the patterns below: `byplay-log` (minimal), `dropply-api` (fu
   - Game-state DO with embedded SQLite: see `baccarat/src/durable-objects/game-room.ts`.
   - WebSocket-hibernation DO: see `live-user/src/site-manager.ts` — uses `ctx.acceptWebSocket(server)` so the DO unloads when idle. **Watch out**: `webSocketClose` is called *after* the socket is already closed; never call `ws.close()` from there or it throws.
 - **Per-request stateful clients** (Telegram bot, OAuth client): construct **per request**, not at module top-level. Reusing across requests breaks on Workers — see how `baccarat/src/handlers/commands.ts` constructs a fresh `Bot` in each webhook invocation.
+- **KV cache keys**: keep the key builders in one module per app — `flnk/src/lib/data/cache-keys.ts` is the reference (`link:{domain}:{slug}`, `visits:{id}`, `pwfail:{ip}:{slug}`). The produced strings address live KV entries, so they must stay byte-identical; inlining a key at a call site is how stale data leaks. Invalidate every key for a record in the same operation, and treat a key-format change as a coordinated migration, not an edit.
 
 ### Next.js
 
-Reference apps: `SecureC` and `dropply-web` (i18n, layout pattern), `flox` (single-locale, complex search), `bycut` (manager-based architecture), `clearify` (multi-mode toolbox with `--webpack` build).
+Reference apps: `dropply-web` (i18n, layout pattern, Web-Worker crypto), `flox` (single-locale, complex search), `bycut` (manager-based architecture), `clearify` (multi-mode toolbox with `--webpack` build).
 
 - **Page route**: `app/[locale]/<route>/page.tsx` (with i18n) or `app/<route>/page.tsx` (without). Optional `loading.tsx` / `error.tsx` siblings.
 - **Server route handler**: `app/api/<name>/route.ts`. For SSE-style fan-out, see `flox/src/app/api/search-parallel/route.ts` — it streams JSON SSE chunks with `type: 'start' | 'result' | 'error' | 'done'`.
@@ -63,7 +64,7 @@ Reference apps: `SecureC` and `dropply-web` (i18n, layout pattern), `flox` (sing
 - **State**: Zustand store in `src/stores/<feature>-store.ts`, with `persist` middleware when state should survive reloads. `flox/src/lib/store/` has many examples (`favorites-store`, `history-store`, `search-history-store`, `settings-store`).
 - **Data fetch**: TanStack Query if the app already uses it (`text2img`, `dropply-web`); otherwise Server Components / `fetch` in route handlers.
 - **Strings (i18n apps)**: every user-visible string keyed in **both** `messages/en.json` and `messages/zh.json`. `useTranslations()` in client components, `getTranslations()` in server.
-- **Heavy compute / wasm / models**: in a Web Worker, not the main thread. See `bycut/src/services/transcription/worker.ts` (Hugging Face Transformers), `SecureC/src/workers/cryptoWorker.ts` (cipher streaming).
+- **Heavy compute / wasm / models**: in a Web Worker, not the main thread. See `bycut/src/services/transcription/worker.ts` (Hugging Face Transformers), `dropply-web/src/workers/cryptoWorker.ts` (cipher streaming).
 - **Manager-based subsystems** (only if the app is editor-shaped like `bycut`): `src/core/managers/<thing>-manager.ts`, plus a `commands.ts` undo/redo bus. Don't reach for this pattern in a regular CRUD app.
 
 ### Nuxt
@@ -111,5 +112,5 @@ If the feature touches multiple unrelated areas of the app, split into multiple 
 
 - Hardcoding strings in an i18n app — keys must exist in **both** `en.json` and `zh.json`.
 - Adding a database column without `pnpm --filter <worker> db:gen` — the generated migration file is the source of truth, not the schema TS edit.
-- Storing the encryption key server-side in `dropply-*` / `SecureC` — the server never sees plaintext or keys. `dropply-web` keeps the key in the URL fragment (`#key=…`); re-read `dropply-web/src/lib/crypto.ts` and `SecureC/src/workers/cryptoWorker.ts` before touching crypto.
+- Sending a key, passphrase or plaintext to the server in `dropply-*` — everything is encrypted client-side with `@cdlab/cipher` and the API only ever holds ciphertext (even the share password is Argon2id-hashed in the browser first, see `dropply-web/src/lib/api.ts`). Re-read `dropply-web/src/workers/cryptoWorker.ts` and `packages/cipher/src/password.ts` before touching crypto.
 - Reusing a stateful client (Telegram bot, WebSocket) across requests on a Worker — construct per-request. See `baccarat/src/handlers/commands.ts`.

@@ -34,6 +34,17 @@ Never quote a version number from this file or from memory — read it from `pnp
 
 - **Biome only** — do not introduce ESLint or Prettier. The single `biome.json` at the root governs everything except `apps/repo-changelog/**` (excluded; Nuxt has its own ESLint).
 - Per-app lint domains (Next/React, Vue) are enabled via `biome.json` `overrides` rather than per-app config files.
+- The `biome` binary lives only in the root `node_modules/.bin`, so per-app `lint` scripts can't invoke it. Lint runs from the root: `pnpm lint:biome`.
+- **What `files.includes` excludes**: build output (`dist`, `build`, `public`, `.next`, `.out`, `.wrangler`, `.turbo`, `.cache`), generated artefacts (`apps/<worker>/src/database/**/*.{json,sql}`, `apps/**/cloudflare-env.d.ts`), vendored sources (`packages/ui/src/{components,reactbits}/**/*.tsx`), and `apps/repo-changelog/**`. Extend it for any new generated or vendored source.
+
+## Scripts
+
+Every app and package follows the same script vocabulary:
+
+- **Dev**: `nsl run <tool> dev` — never bare `next dev` / `wrangler dev` / `nuxt dev`.
+- **Typecheck**: `tsc --noEmit` (Next, Workers), `nuxt typecheck` (Nuxt), `tsc --project ./tsconfig.json --noEmit` (packages).
+- **Build**: exists everywhere. Deploy is a **separate, explicit** step (`turbo deploy`) — nothing auto-deploys from CI.
+- **Test**: `vitest --run` where tests exist.
 
 ## TypeScript
 
@@ -62,6 +73,8 @@ Never quote a version number from this file or from memory — read it from `pnp
 - **`@cdlab/db`** — shared Drizzle DB factory (D1 / LibSQL) plus query helpers. Prefer this over hand-rolling a per-app `src/lib/db.ts` when adding a new DB-backed app.
 - **`@cdlab/tsconfig`** — see above.
 
+`utils`, `cipher` and `uncrypto` are tsdown-built: consumers read `dist/`, so an edit isn't visible until you rebuild (`pnpm --filter @cdlab/<pkg> build`, or `dev --watch` while iterating). Root `pnpm prepare` rebuilds every `packages/*` in topological order after install.
+
 ## Storage / DB
 
 - **Drizzle** for any persistent store inside a Worker.
@@ -72,7 +85,7 @@ Never quote a version number from this file or from memory — read it from `pnp
 
 - **IDs**: `@cdlab/driftflake` (catalog dep) for general-purpose sortable IDs. UUID v4 for sessions.
 - **Auth on Workers**: `jose` for ES256 JWT verification, mounted as middleware on `/api/*` only.
-- **End-to-end encryption**: AES-GCM + Argon2id with the key in the URL fragment (server never sees it) for `dropply`; XChaCha20-Poly1305 for `SecureC`.
+- **End-to-end encryption**: `@cdlab/cipher` — XChaCha20-Poly1305 stream cipher with an Argon2id KDF, in both password and public-key modes. `dropply-web` is the reference consumer: encryption runs in a Web Worker and the server only ever stores ciphertext.
 
 ## Dev proxy
 

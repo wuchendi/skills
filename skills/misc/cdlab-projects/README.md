@@ -2,34 +2,9 @@
 
 Personal maintenance skill for [`@cdlab/projects-monorepo`](https://github.com/WuChenDi/projects). Bundles flow-oriented playbooks + scaffolding templates so day-to-day work in the repo (or in a new repo cloning this style) lands consistently without re-deriving conventions every time.
 
-Not designed to be a generic monorepo helper. Everything is anchored to the actual apps in the repo (baccarat, byplay-log, dropply-api/web, flnk, flox, SecureC, wepush, …).
+Not designed to be a generic monorepo helper. Everything is anchored to the actual apps in the repo (baccarat, byplay-log, dropply-api/web, flnk, flox, wepush, …).
 
-## What it covers
-
-| Intent                    | Reference                              |
-|---------------------------|----------------------------------------|
-| Scaffold a new app        | `references/new-app.md` + `assets/templates/{nextjs-app,worker-app,nuxt-app}` |
-| Scaffold a shared package | `references/new-package.md` + `assets/templates/package` |
-| Upgrade dependencies      | `references/deps-upgrade.md`           |
-| Cross-app refactor        | `references/refactor.md`               |
-| Add a feature to an app   | `references/new-feature.md`            |
-| Review a change           | `references/code-review.md`            |
-| Sync `CLAUDE.md` / README | `references/update-docs.md`            |
-
-The shared technical baseline (`stack.md`, `conventions.md`) is loaded only when needed.
-
-## Stack baked in
-
-The cdlab projects baseline:
-
-- pnpm workspaces with two catalogs (`prod`, `dev`)
-- Turborepo with concurrency 50
-- Biome (single quotes, no semicolons, `useImportType` separated, `noFloatingPromises`, `noTsIgnore`, zod `import * as z`)
-- `@dotns/nsl` dev proxy (`http://<name>.localhost:3355`)
-- Cloudflare Pages / Workers / D1 + Drizzle (`DB_TYPE=libsql|d1`)
-- Next.js (App Router) for browser apps, Hono for Workers, Nuxt 4 for the dashboard
-- `next-intl` (`en`/`zh`) by default
-- Conventional Commits, English remote-visible metadata
+Covers scaffolding apps and shared packages, dependency/catalog upgrades, cross-app refactors, feature work, pre-PR self-review, and doc sync. `SKILL.md` is the router — see its intent table for what maps to which playbook.
 
 ## Install
 

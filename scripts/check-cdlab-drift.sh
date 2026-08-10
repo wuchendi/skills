@@ -26,21 +26,35 @@ fi
 drift=0
 report() { drift=1; printf 'DRIFT  %s\n' "$1"; }
 
+# Every workspace member's package.json, once — reused by several checks below.
+upstream_pkgjson=$(ls "$ROOT"/apps/*/package.json "$ROOT"/packages/*/package.json 2>/dev/null)
+
 # 1. Package scope — a rename here breaks every generated package.json.
+#    The allowed set is derived from what upstream actually depends on, so a new
+#    third-party scope upstream doesn't produce a false positive here.
 upstream_scope=$(sed -n 's/.*"name": "\(@[^/]*\)\/.*/\1/p' "$ROOT/packages/tsconfig/package.json")
+#    Docs count too: `@dotns/nsl` is a globally-installed CLI, so it appears in
+#    upstream's CLAUDE.md but in nobody's dependencies.
+known_scopes=$( { echo "$upstream_scope/"
+                  # shellcheck disable=SC2086
+                  grep -hoE '"@[a-z0-9-]+/' $upstream_pkgjson | tr -d '"'
+                  git -C "$ROOT" grep -hoE '@[a-z0-9-]+/' -- '*.md' 2>/dev/null || true
+                } | sort -u )
 skill_scopes=$(grep -rhoE '@[a-z0-9-]+/' "$SKILL" | sort -u)
 for s in $skill_scopes; do
-  case "$s" in
-    "$upstream_scope"/|@types/|@hono/|@next/|@nuxt/|@nuxtjs/|@vueuse/|@libsql/|@cloudflare/|@dotns/|@base-ui/|@tanstack/|@opennextjs/|@tailwindcss/) ;;
-    *) report "unknown package scope '$s' (upstream uses '$upstream_scope/')" ;;
-  esac
+  grep -qx "$s" <<<"$known_scopes" && continue
+  report "unknown package scope '$s' (upstream uses '$upstream_scope/')"
 done
 
 # 2. Referenced apps/packages that no longer exist upstream.
+#    Membership is decided by the presence of a package.json, NOT by the
+#    directory existing: a retired app can leave a stale node_modules/ behind
+#    (SecureC did exactly that after being merged into dropply) and a
+#    directory-only check happily calls that alive.
 #    Two citation styles appear in the playbooks, both must be checked:
 #      `apps/<name>/...` / `packages/<name>/...`   (explicit)
 #      `<name>/src/...`                            (bare, e.g. byplay-log/src/index.ts)
-names=$( (ls "$ROOT/apps"; ls "$ROOT/packages") | sort -u )
+names=$(sed -E 's|.*/(apps\|packages)/([^/]+)/package\.json$|\2|' <<<"$upstream_pkgjson" | sort -u)
 refs=$( { grep -rhoE '(apps|packages)/[a-zA-Z][a-zA-Z0-9_-]+' "$SKILL" | cut -d/ -f2
           grep -rhoE '\b[a-zA-Z][a-zA-Z0-9_-]{2,}/src/' "$SKILL" | cut -d/ -f1
         } | sort -u )
@@ -48,8 +62,22 @@ for ref in $refs; do
   grep -qx "$ref" <<<"$names" && continue
   # 'src' and the glob placeholders are not app names
   case "$ref" in src|apps|packages|'*'|'<name>'|'<app-name>'|'<pkg-name>') continue ;; esac
-  report "references '$ref' — not in upstream apps/ or packages/"
+  report "references '$ref' — not a workspace member upstream"
 done
+
+# 2b. Cited source files that have moved or been deleted.
+#     The playbooks send the agent to read specific files ("re-read
+#     dropply-web/src/lib/crypto.ts before touching crypto"). Those rot
+#     independently of the app still existing, so check each path.
+while read -r path; do
+  [ -z "$path" ] && continue
+  owner=${path%%/*}
+  # only paths under a known workspace member are checkable
+  grep -qx "$owner" <<<"$names" || continue
+  [ -e "$ROOT/apps/$path" ] || [ -e "$ROOT/packages/$path" ] \
+    || report "cites '$path' — file does not exist upstream"
+done < <(grep -rhoE '\b[a-zA-Z][a-zA-Z0-9_-]*/src/[a-zA-Z0-9_./-]+\.(ts|tsx|css)\b' "$SKILL" \
+         | sed 's|^apps/||' | sort -u)
 
 # 3. compatibility_date lag in the worker template.
 tpl_date=$(grep -oE '"compatibility_date": *"[0-9-]+"' \
@@ -64,12 +92,24 @@ fi
 #    (A literal is fine when the dep isn't catalogued — that mirrors upstream.)
 catalogued=$(sed -n "/^catalogs:/,/^[a-z]/p" "$ROOT/pnpm-workspace.yaml" \
              | grep -oE "^ +'?[@a-z0-9./-]+'?:" | tr -d " ':" | sort -u)
+#    5. Literal versions that ARE legitimately outside the catalog (the Nuxt
+#       deps) still go stale — compare them against what upstream pins.
 for pj in "$SKILL"/skills/cdlab-projects/assets/templates/*/package.json; do
+  tpl=$(basename "$(dirname "$pj")")
   while read -r dep ver; do
     [ -z "$dep" ] && continue
     case "$ver" in catalog:*|workspace:*) continue ;; esac
-    grep -qx "$dep" <<<"$catalogued" \
-      && report "$(basename "$(dirname "$pj")")/package.json pins '$dep': $ver but it is in the catalog"
+    if grep -qx "$dep" <<<"$catalogued"; then
+      report "$tpl/package.json pins '$dep': $ver but it is in the catalog"
+      continue
+    fi
+    # Not catalogued — upstream pins it literally too, so the versions should agree.
+    # shellcheck disable=SC2086
+    up_vers=$(grep -hoE "\"$dep\": *\"[^\"]+\"" $upstream_pkgjson \
+              | sed -E 's/.*: *"([^"]+)"/\1/' | sort -u)
+    [ -z "$up_vers" ] && continue
+    grep -qxF "$ver" <<<"$up_vers" \
+      || report "$tpl/package.json pins '$dep': $ver — upstream uses $(tr '\n' ' ' <<<"$up_vers")"
   done < <(sed -n '/"\(dev\)\?[Dd]ependencies"/,/}/p' "$pj" \
            | sed -n 's/ *"\([^"]*\)": *"\([^"]*\)".*/\1 \2/p')
 done

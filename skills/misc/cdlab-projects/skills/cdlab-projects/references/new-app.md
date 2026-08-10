@@ -60,9 +60,9 @@ Then read the template's own README (it lists exactly which placeholders exist a
 ```bash
 pnpm install
 pnpm --filter @cdlab/<app-name> typecheck
-pnpm --filter @cdlab/<app-name> lint        # if a lint script exists
 pnpm --filter @cdlab/<app-name> build       # smoke build
 pnpm --filter @cdlab/<app-name> dev         # boot dev server, hit the URL once
+pnpm lint:biome                             # from the root — biome only exists there
 ```
 
 For a Worker, additionally:
@@ -86,7 +86,7 @@ Use the same level of detail as neighboring sections — terse, architectural, n
 
 ### Next.js (`nextjs-app` template)
 
-- **Ships with i18n (en/zh) and a complete `src/components/layout/*` set by default** — `Header`, `Footer`, `ClientProviders`, `ThemeProvider`, `ThemeToggle`, `LanguageSelector`. Modeled after `apps/SecureC` (i18n) and `apps/flox` (layout assembly).
+- **Ships with i18n (en/zh) and a complete `src/components/layout/*` set by default** — `Header`, `Footer`, `ClientProviders`, `ThemeProvider`, `ThemeToggle`, `LanguageSelector`. Modeled after `apps/dropply-web` (i18n) and `apps/flox` (layout assembly).
 - Default is **static export** (`output: 'export'`) deploying to Cloudflare Pages. Drop `output: 'export'` if you need SSR or route handlers.
 - Tailwind v4 comes via `@cdlab/ui/globals.css` (imported once in `app/[locale]/layout.tsx`). PostCSS config is `export { default } from '@cdlab/ui/postcss.config'`.
 - shadcn/ui components live in `@cdlab/ui/components/<name>` — never copy a component into the app; add it to the shared package.
@@ -103,12 +103,12 @@ Use the same level of detail as neighboring sections — terse, architectural, n
 - `wrangler.jsonc` has `compatibility_date` set to a recent quarter and `compatibility_flags: ['nodejs_compat']`. Bump the date when you upgrade (see `deps-upgrade.md`).
 - `observability` is on (`enabled: true, head_sampling_rate: 1`).
 - **If the Worker doesn't need a DB**, delete `drizzle.config.ts`, the `src/database/` folder, the `db:*` scripts, and the `d1_databases` block in `wrangler.jsonc`. Don't ship dead code.
-- **If it needs a DB**, the template ships the Drizzle two-dialect setup. Add tables to `schema.ts` with the `trackingFields` block (see conventions.md), then `pnpm db:gen` to generate the migration, then `pnpm cf:localdb` to apply locally.
+- **If it needs a DB**, the template ships the Drizzle two-dialect setup. Add tables to `schema.ts` with the `trackingFields` block (see the Drizzle section of `SKILL.md`), then `pnpm db:gen` to generate the migration, then `pnpm cf:localdb` to apply locally.
 - One Hono `Bot`/client constructed per request — never share stateful clients across requests on Workers (cf. the Telegram bot pattern in `baccarat`).
 
 ### Nuxt (`nuxt-app` template)
 
-- `nuxt.config.ts` enables `@nuxt/ui`, `@nuxtjs/mdc`, `@vueuse/nuxt` by default. Trim modules you don't need.
+- `nuxt.config.ts` enables `@nuxt/ui` and `@vueuse/nuxt` by default. Add `@nuxtjs/mdc` if the app renders markdown (that's what `repo-changelog` does); trim anything you don't need.
 - Routes via `app/pages/`; page components in `app/components/`; composables in `app/composables/`.
 - Server data lives in `shared/types/` (typed for both client and server bundles).
 - Set `routeRules: { '/': { isr: 60 } }` for ISR pages; add `compatibilityDate` to the current quarter.

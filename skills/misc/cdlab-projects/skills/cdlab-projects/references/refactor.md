@@ -20,23 +20,26 @@ If the user's intent doesn't fit, ask which it is.
 
 ### A1 — cdlab-specific home selection
 
-`packages/utils/src/` is organized by capability. Current folders:
+`packages/utils/src/` is organized by capability, one **flat module per capability** — not a folder each. Current modules:
 
-- `clipboard/` — copy-to-clipboard
-- `download/` — `downloadFile` (single Blob/URL) and `downloadFilesAsZip` (batch ZIP via dynamic `jszip`); ZIP naming convention `{prefix}_yyyyMMdd_HHmmss.zip`
-- `format/` — formatting utilities
-- `idb-store/` — IndexedDB-backed key/value store
-- `logger/` — browser-side logger
-- `np/` — numerical-precision math
+- `clipboard.ts` — copy-to-clipboard
+- `download.ts` — `downloadFile` (single Blob/URL) and `downloadFilesAsZip` (batch ZIP via dynamic `jszip`); ZIP naming convention `{prefix}_yyyyMMdd_HHmmss.zip`
+- `format.ts` — formatting utilities
+- `idb-store.ts` — IndexedDB-backed key/value store
+- `logger.ts` — browser-side logger
+- `password.ts` — password generation / strength
+- `np/` — numerical-precision math (the one capability big enough to earn a folder)
 
-Reuse an existing folder when the new helper fits. Add a new folder only for a genuinely new capability (e.g. `cache/`, `cron/`).
+Extend an existing module when the new helper fits. Add a new one only for a genuinely new capability (e.g. `cache.ts`, `cron.ts`) — and only promote it to a folder once it outgrows a single file, the way `np/` did.
 
-Recent extraction precedent: the `download` folder consolidated logic that used to live separately in `bycut`, `clearify`, `dropply-web`, `vidl`. See `refactor(utils): extract shared download utilities` (commit `44bcadd`) for the shape of that move.
+Confirm the current shape with `ls $ROOT/packages/utils/src` before adding — this list drifts.
+
+Recent extraction precedent: `download.ts` consolidated logic that used to live separately in `bycut`, `clearify`, `dropply-web`, `vidl`. See `refactor(utils): extract shared download utilities` (commit `44bcadd`) for the shape of that move.
 
 ### A2 — cdlab-specific move steps
 
-1. Create the new file under `packages/utils/src/<capability>/<name>.ts`.
-2. Add tests next to it (`<name>.test.ts`) using **vitest**.
+1. Create (or extend) `packages/utils/src/<capability>.ts`.
+2. Add tests next to it (`<capability>.test.ts`) using **vitest**.
 3. Re-export from `packages/utils/src/index.ts` so consumers can `import { x } from '@cdlab/utils'`. (If subpath exports are configured, also re-export from the subpath barrel.)
 4. Build the package: `pnpm --filter @cdlab/utils build` (or `dev --watch` if you'll iterate).
 5. In each consumer app, replace the local copy with `import { x } from '@cdlab/utils'`.
