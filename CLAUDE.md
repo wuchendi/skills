@@ -52,6 +52,7 @@ Multiple edits the same day reuse the same date — no suffix needed.
 
 - `bash scripts/list-skills.sh` — should list every `SKILL.md`. If a skill is missing, the path or filename is wrong.
 - `bash scripts/link-skills.sh` — symlinks every skill into `~/.claude/skills/` for local testing. Refuses to run if `~/.claude/skills` is itself a symlink back into this repo.
+- `bash scripts/check-cdlab-drift.sh [path-to-projects]` — for `misc/cdlab-projects` only: flags references to apps/packages that upstream has renamed or retired, a stale worker `compatibility_date`, and literal versions that belong in the catalog. Run it before touching that skill. Skills anchored to a live repo go stale silently; this makes it visible.
 
 ## Style
 
