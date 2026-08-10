@@ -26,14 +26,7 @@ If a Biome rule fails, **fix the code, not the rule**. Don't add `// biome-ignor
 
 ## cdlab-specific style checks
 
-Eyeball these in the diff (Biome catches most, not all):
-
-- [ ] Single quotes, no semicolons, 2-space indent.
-- [ ] `import type { … }` separated, never `import { type … }`.
-- [ ] `import * as z from 'zod'` (if the file uses zod) — `import { z }` will fail.
-- [ ] No `// @ts-ignore` — only `// @ts-expect-error <reason>`.
-- [ ] No `delete obj.prop`. No `new Date().getTime()`.
-- [ ] Every async call is awaited or `void`-ed.
+Walk the diff against the **§Style cheatsheet in `SKILL.md`** — it's already in context, and it's the single source for these rules. Biome catches most of them, but not the ones that are conventions rather than lint rules (naming, package metadata, dev-script shape).
 
 ## cdlab-specific dependency checks
 
@@ -47,7 +40,7 @@ Eyeball these in the diff (Biome catches most, not all):
 - [ ] New code lives in the right layer (Workers: `src/routes/` `src/lib/` `src/cron/`; Next: `src/components/<feature>/` `src/stores/<feature>-store.ts` `src/lib/`).
 - [ ] No app-specific logic leaked into `packages/utils` or `packages/ui` (they stay app-agnostic).
 - [ ] No duplicated helper that already exists in `@cdlab/utils` / `@cdlab/ui`.
-- [ ] If a Worker touches the DB: filtered by `eq(table.isDeleted, false)`. **Never** `db.delete()` — soft-delete on writes.
+- [ ] If a Worker touches the DB: filtered by `eq(table.isDeleted, 0)`. **Never** `db.delete()` — soft-delete on writes.
 - [ ] If a Next app uses i18n (next-intl): every new string has keys in **both** `messages/en.json` and `messages/zh.json`.
 - [ ] New env vars declared in `wrangler.jsonc` `vars` (with placeholder), `.env.example`, and `src/types.ts` if the app has a typed `createConfig`.
 

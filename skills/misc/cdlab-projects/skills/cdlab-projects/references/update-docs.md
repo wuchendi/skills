@@ -160,7 +160,7 @@ This file provides guidance to Claude Code when working with code in this reposi
 
 ## Conventions
 
-<lint, deps, i18n, IDs, commits — copy from this skill's conventions.md, abbreviated>
+<lint, deps, i18n, IDs, commits — copy from this skill's SKILL.md style cheatsheet, abbreviated>
 ```
 
 Don't write the whole 300-line doc at once. Start with the skeleton + one app, and grow it as more apps land.

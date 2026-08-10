@@ -17,8 +17,6 @@
     "build": "next build --webpack",
     "build:cf": "npx @cloudflare/next-on-pages@latest",
     "start": "next start",
-    "lint": "next lint",
-    "lint:fix": "next lint --fix",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

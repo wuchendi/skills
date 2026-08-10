@@ -9,7 +9,7 @@ metadata:
 
 # cdlab-projects
 
-Maintenance skill for the cdlab projects-monorepo. Anchored to the real apps in the repo — `baccarat`, `byplay-log`, `dropply-api/web`, `flnk`, `flox`, `SecureC`, `wepush`, etc. — so guidance points at concrete reference implementations instead of inventing abstract patterns.
+Maintenance skill for the cdlab projects-monorepo. Anchored to the real apps in the repo — `baccarat`, `byplay-log`, `dropply-api/web`, `flnk`, `flox`, `wepush`, etc. — so guidance points at concrete reference implementations instead of inventing abstract patterns.
 
 **Reference impls named here can be renamed or retired upstream.** Before citing one, confirm it still exists (`ls $ROOT/apps`). If it's gone, find the closest current equivalent rather than describing the dead one.
 
@@ -28,6 +28,7 @@ Match the user's request to one of the intents below. If two apply (e.g. "new ap
 | Add a feature to an existing app               | `references/new-feature.md`        | —                                      |
 | Pre-commit / pre-PR self-review                | `references/code-review.md`        | —                                      |
 | Sync `CLAUDE.md` / README after a change       | `references/update-docs.md`        | —                                      |
+| "What should I reach for / where does this config live" | `references/stack.md`     | —                                      |
 
 Before reading a reference, confirm intent with the user in **one short sentence** (e.g. "Spinning up `foo-api` from the worker template, right?"). Don't ask if the request is unambiguous.
 
@@ -62,6 +63,7 @@ These rules apply to **every** edit unless the project's `CLAUDE.md` says otherw
 - Use `// @ts-expect-error` (with a reason), never `// @ts-ignore`.
 - `Date.now()`, never `new Date().getTime()`.
 - No `delete obj.prop` — assign `undefined` or restructure.
+- `noUnusedImports` and `noImplicitAnyLet` are warnings — fix them rather than silencing them.
 
 ### Dependencies
 
@@ -107,6 +109,7 @@ Reference impl: `byplay-log/src/index.ts` (canonical minimal Worker). For more c
 ### Commits
 
 - Conventional Commits: `feat`, `fix`, `refactor`, `chore`, `docs`, `build`, `test`. Optional scope: `feat(flnk): …`, `chore(deps): …`.
+- Subject imperative, ≤ 72 chars; body wraps at 100. No `Co-authored-by` trailers.
 - English only in commit messages, PR titles, PR bodies, and any other remote-visible Git metadata. No mention of AI assistants or model names.
 
 ## Step 4 — Verify before declaring done
