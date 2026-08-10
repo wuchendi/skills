@@ -5,8 +5,8 @@
     "name": "wudi"
   },
   "metadata": {
-    "description": "Playbooks + templates tuned to the cdlab projects-monorepo (https://github.com/WuChenDi/projects): scaffolding new apps/packages, bumping pnpm catalog deps, cross-app refactors, code review, and documentation sync — anchored to the existing apps' conventions (baccarat DO, byplay-log/dropply-api Hono middleware, shortener KV invalidation, SecureC/flox Next.js layout).",
-    "version": "2026.06.13"
+    "description": "Playbooks + templates tuned to the cdlab projects-monorepo (https://github.com/WuChenDi/projects): scaffolding new apps/packages, bumping pnpm catalog deps, cross-app refactors, code review, and documentation sync — anchored to the existing apps' conventions (baccarat DO, byplay-log/dropply-api Hono middleware, flnk KV invalidation, SecureC/flox Next.js layout).",
+    "version": "2026.08.10"
   },
   "plugins": [
     {

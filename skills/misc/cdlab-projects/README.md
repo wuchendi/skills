@@ -1,8 +1,8 @@
 # cdlab-projects
 
-Personal maintenance skill for [`@cdlab996/projects-monorepo`](https://github.com/WuChenDi/projects). Bundles flow-oriented playbooks + scaffolding templates so day-to-day work in the repo (or in a new repo cloning this style) lands consistently without re-deriving conventions every time.
+Personal maintenance skill for [`@cdlab/projects-monorepo`](https://github.com/WuChenDi/projects). Bundles flow-oriented playbooks + scaffolding templates so day-to-day work in the repo (or in a new repo cloning this style) lands consistently without re-deriving conventions every time.
 
-Not designed to be a generic monorepo helper. Everything is anchored to the actual apps in the repo (baccarat, byplay-log, dropply-api/web, flox, SecureC, shortener, …).
+Not designed to be a generic monorepo helper. Everything is anchored to the actual apps in the repo (baccarat, byplay-log, dropply-api/web, flnk, flox, SecureC, wepush, …).
 
 ## What it covers
 
@@ -55,8 +55,7 @@ cdlab-projects/
     ├── SKILL.md               # router + style cheatsheet
     ├── references/            # detailed playbooks (loaded on demand)
     └── assets/
-        ├── templates/         # minimal app/package skeletons
-        └── snippets/          # standard biome / tsconfig / turbo / workspace files
+        └── templates/         # minimal app/package skeletons
 ```
 
 ## License

@@ -104,9 +104,9 @@ If a Worker uses `compatibility_flags`, leave them as-is (they're orthogonal to 
 ### B3 — Verify each Worker boots
 
 ```bash
-for w in baccarat byplay-log dropply-api live-user shortener; do
+for w in $(ls apps); do   # or name the Workers you actually touched
   echo "=== $w ==="
-  pnpm --filter @cdlab996/$w dev &  # or run sequentially and curl
+  pnpm --filter @cdlab/$w dev &  # or run sequentially and curl
   sleep 3
   pkill -f "wrangler dev"
 done
@@ -133,9 +133,9 @@ chore(workers): bump wrangler compatibility_date to <YYYY-MM-DD>
 ### C2 — Install and verify
 
 ```bash
-pnpm --filter @cdlab996/<app-name> add <dep>             # or `add -D <dep>` for devDependency
-pnpm --filter @cdlab996/<app-name> typecheck
-pnpm --filter @cdlab996/<app-name> build
+pnpm --filter @cdlab/<app-name> add <dep>             # or `add -D <dep>` for devDependency
+pnpm --filter @cdlab/<app-name> typecheck
+pnpm --filter @cdlab/<app-name> build
 ```
 
 If pnpm complains about `WARN catalogs vs literal version`, you set the wrong location — fix it.
@@ -171,5 +171,5 @@ Don't squash the prep commits into the bump itself — keeping them separate let
 
 - Bumping `react` and `next` separately — bump together, after checking the next release supports the new react.
 - Major bumping `tsdown` / `vitest` without reading release notes — config shape (`tsdown.config.ts`) often changes.
-- Bumping `typescript` Major alone — rerun `pnpm --filter @cdlab996/tsconfig build` and verify each shared config still parses.
+- Bumping `typescript` Major alone — rerun `pnpm --filter @cdlab/tsconfig build` and verify each shared config still parses.
 - New `compatibility_date` may implicitly flip a `compatibility_flags` default — diff the Cloudflare release notes for the date you're bumping to.

@@ -22,16 +22,16 @@ find . -type f \( -name '*.ts' -o -name '*.json' \) -exec \
 
 - `tsdown` build producing both ESM (`dist/index.mjs`) and CJS (`dist/index.cjs`) with `.d.mts` types
 - `vitest` ready in `test/`
-- TypeScript config extending `@cdlab996/tsconfig/utils.json`
+- TypeScript config extending `@cdlab/tsconfig/utils.json`
 - `prepack` script that builds before publish (even though packages here are private)
 
 ## After creating
 
 ```bash
 pnpm install                                       # `prepare` will build new package
-pnpm --filter @cdlab996/<pkg-name> typecheck
-pnpm --filter @cdlab996/<pkg-name> test
-pnpm --filter @cdlab996/<pkg-name> build
+pnpm --filter @cdlab/<pkg-name> typecheck
+pnpm --filter @cdlab/<pkg-name> test
+pnpm --filter @cdlab/<pkg-name> build
 ```
 
 ## Adding multiple entry points
@@ -42,19 +42,19 @@ If you need runtime-split entries (browser vs node), edit `tsdown.config.ts`:
 entry: ['src/index.web.ts', 'src/index.node.ts']
 ```
 
-Then update `package.json` `exports` with the `browser` / `node` / `default` conditions. See `@cdlab996/uncrypto` as a reference.
+Then update `package.json` `exports` with the `browser` / `node` / `default` conditions. See `@cdlab/uncrypto` as a reference.
 
 ## Consuming from an app
 
 ```jsonc
 // apps/<consumer>/package.json
 "dependencies": {
-  "@cdlab996/<pkg-name>": "workspace:*"
+  "@cdlab/<pkg-name>": "workspace:*"
 }
 ```
 
 ```ts
-import { … } from '@cdlab996/<pkg-name>'
+import { … } from '@cdlab/<pkg-name>'
 ```
 
-After editing the package, rebuild it (`pnpm --filter @cdlab996/<pkg-name> build` or `dev --watch`) so consumers see the new symbols.
+After editing the package, rebuild it (`pnpm --filter @cdlab/<pkg-name> build` or `dev --watch`) so consumers see the new symbols.

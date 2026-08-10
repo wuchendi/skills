@@ -1,6 +1,6 @@
 'use client'
 
-import { Button } from '@cdlab996/ui/components/button'
+import { Button } from '@cdlab/ui/components/button'
 
 export default function Error({ reset }: { reset: () => void }) {
   return (

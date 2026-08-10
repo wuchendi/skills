@@ -35,9 +35,9 @@ The template ships with the **Drizzle (libsql + d1) two-dialect setup**. If your
 
 ```bash
 pnpm install
-pnpm --filter @cdlab996/<app-name> cf-typegen      # generate CloudflareBindings type
-pnpm --filter @cdlab996/<app-name> typecheck
-pnpm --filter @cdlab996/<app-name> dev
+pnpm --filter @cdlab/<app-name> cf-typegen      # generate CloudflareBindings type
+pnpm --filter @cdlab/<app-name> typecheck
+pnpm --filter @cdlab/<app-name> dev
 ```
 
 ## Adding to the workspace
