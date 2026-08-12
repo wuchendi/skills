@@ -1,0 +1,30 @@
+{
+  "$schema": "https://skills.sh/schemas/skills.sh.schema.json",
+  "notGrouped": "bottom",
+  "groupings": [
+    {
+      "title": "Engineering",
+      "description": "Stack-agnostic code-work methodology, reusable across any codebase.",
+      "skills": [
+        "pre-pr-review",
+        "react-best-practices",
+        "refactor-extract"
+      ]
+    },
+    {
+      "title": "Misc",
+      "description": "Project-specific or single-purpose tools, anchored to one repo or one narrow scenario.",
+      "skills": [
+        "cdlab-projects",
+        "ikui"
+      ]
+    },
+    {
+      "title": "Fun",
+      "description": "Tools kept for play, not serious engineering work.",
+      "skills": [
+        "explain-words"
+      ]
+    }
+  ]
+}
