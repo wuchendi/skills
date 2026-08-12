@@ -58,11 +58,13 @@ Reference apps for the patterns below: `byplay-log` (minimal), `dropply-api` (fu
 
 Reference apps: `dropply-web` (i18n, layout pattern, Web-Worker crypto), `flox` (single-locale, complex search), `bycut` (manager-based architecture), `clearify` (multi-mode toolbox with `--webpack` build).
 
+> **For the React code itself**, run the [`react-best-practices`](https://github.com/WuChenDi/skills/tree/main/skills/engineering/react-best-practices) skill alongside this playbook — its §3 `api-*` rules *are* the TanStack Query conventions these apps follow (key factory, prefix invalidation, `enabled` gating, SSR prefetch), and §1/§2/§6 cover waterfalls, bundle splitting and re-render traps. **Then** apply the cdlab specifics below.
+
 - **Page route**: `app/[locale]/<route>/page.tsx` (with i18n) or `app/<route>/page.tsx` (without). Optional `loading.tsx` / `error.tsx` siblings.
 - **Server route handler**: `app/api/<name>/route.ts`. For SSE-style fan-out, see `flox/src/app/api/search-parallel/route.ts` — it streams JSON SSE chunks with `type: 'start' | 'result' | 'error' | 'done'`.
 - **Client UI**: `src/components/<feature>/<Name>.tsx`. Group by feature. `'use client'` only on components that actually need it.
 - **State**: Zustand store in `src/stores/<feature>-store.ts`, with `persist` middleware when state should survive reloads. `flox/src/lib/store/` has many examples (`favorites-store`, `history-store`, `search-history-store`, `settings-store`).
-- **Data fetch**: TanStack Query if the app already uses it (`text2img`, `dropply-web`); otherwise Server Components / `fetch` in route handlers.
+- **Data fetch**: TanStack Query if the app already uses it (`dropply-web`, `flnk`, `flox`, `text2img`, `wepush`, `bytts`); otherwise Server Components / `fetch` in route handlers. `flnk/src/lib/platform/{api,query-keys}.ts` is the fullest reference — typed API module + central key factory. Rules in `react-best-practices` §3.
 - **Strings (i18n apps)**: every user-visible string keyed in **both** `messages/en.json` and `messages/zh.json`. `useTranslations()` in client components, `getTranslations()` in server.
 - **Heavy compute / wasm / models**: in a Web Worker, not the main thread. See `bycut/src/services/transcription/worker.ts` (Hugging Face Transformers), `dropply-web/src/workers/cryptoWorker.ts` (cipher streaming).
 - **Manager-based subsystems** (only if the app is editor-shaped like `bycut`): `src/core/managers/<thing>-manager.ts`, plus a `commands.ts` undo/redo bus. Don't reach for this pattern in a regular CRUD app.
