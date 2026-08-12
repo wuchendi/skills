@@ -2,6 +2,7 @@
   "name": "wuchendi-skills",
   "skills": [
     "./skills/engineering/pre-pr-review",
+    "./skills/engineering/react-best-practices",
     "./skills/engineering/refactor-extract",
     "./skills/misc/cdlab-projects",
     "./skills/misc/ikui",

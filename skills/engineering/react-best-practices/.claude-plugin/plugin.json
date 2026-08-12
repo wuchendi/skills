@@ -1,0 +1,8 @@
+{
+  "name": "react-best-practices",
+  "version": "2026.08.12",
+  "description": "Rule-indexed React and Next.js guide — waterfalls, bundle size, re-renders, rendering, plus a TanStack Query API/data-layer section. 86 rules loaded on demand.",
+  "author": {
+    "name": "wudi"
+  }
+}
