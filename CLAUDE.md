@@ -33,8 +33,9 @@ skills/<category>/<plugin>/
 
 1. Place the plugin under the right `<category>/`.
 2. Register its path in `.claude-plugin/plugin.json` at the repo root.
-3. The `SKILL.md` frontmatter `description` is the trigger contract — it must describe **when to fire** in concrete phrases the user is likely to say. Vague descriptions are the #1 reason a skill never gets used.
-4. Keep `metadata.author`, `metadata.version`, `metadata.source` filled in.
+3. List its skill name under the matching group in `skills.sh.json` at the repo root — that file only controls how skills.sh renders the repo page; unlisted skills still install, they just fall to the bottom ungrouped.
+4. The `SKILL.md` frontmatter `description` is the trigger contract — it must describe **when to fire** in concrete phrases the user is likely to say. Vague descriptions are the #1 reason a skill never gets used.
+5. Keep `metadata.author`, `metadata.version`, `metadata.source` filled in.
 
 ## Versioning
 
