@@ -40,6 +40,7 @@ After loading, skills are invoked with a **namespace prefix**:
 Stack-agnostic methodology skills. Compose with project-specific skills.
 
 - **[pre-pr-review](./skills/engineering/pre-pr-review/skills/pre-pr-review/SKILL.md)** — Pre-commit / pre-PR self-review: pull the diff, scan for scope creep, walk a surface-area checklist, detect missing co-changes (X-implies-Y), render a green/yellow/red verdict.
+- **[react-best-practices](./skills/engineering/react-best-practices/skills/react-best-practices/SKILL.md)** — 86 rules across 9 categories for React/Next.js, loaded one file at a time from an index: eliminating waterfalls, bundle size, server-side performance, re-renders, rendering, JS micro-optimizations, plus an API & data-layer section for TanStack Query (query keys, invalidation, `enabled` gating, infinite queries, SSR prefetch, optimistic updates).
 - **[refactor-extract](./skills/engineering/refactor-extract/skills/refactor-extract/SKILL.md)** — Sink shared logic into a shared module: confirm worth extracting (≥2 callers, no caller-specific state), decide the shape, two-commit pattern (extract + migrate), verify per consumer.
 
 ### Misc

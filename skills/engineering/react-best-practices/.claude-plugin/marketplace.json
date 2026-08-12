@@ -1,0 +1,18 @@
+{
+  "name": "react-best-practices",
+  "description": "React and Next.js performance + data-layer rules",
+  "owner": {
+    "name": "wudi"
+  },
+  "metadata": {
+    "description": "86 rules across 9 categories for React and Next.js — eliminating waterfalls, bundle size, server-side performance, re-renders, rendering, JS micro-optimizations, and a TanStack Query API/data-layer section (query keys, invalidation, enabled gating, infinite queries, SSR prefetch, optimistic updates). Rules load one file at a time from an index.",
+    "version": "2026.08.12"
+  },
+  "plugins": [
+    {
+      "name": "react-best-practices",
+      "source": "./",
+      "description": "Use when writing, reviewing, or optimizing React/Next.js code, or when working with @tanstack/react-query."
+    }
+  ]
+}
