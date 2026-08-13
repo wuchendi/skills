@@ -1,6 +1,0 @@
-node_modules
-.wrangler
-.dev.vars
-dist
-logs
-src/database/data.db*
