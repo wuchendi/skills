@@ -12,6 +12,13 @@
       ]
     },
     {
+      "title": "Productivity",
+      "description": "Generic engineer workflow tools, not tied to writing code.",
+      "skills": [
+        "monthly-report"
+      ]
+    },
+    {
       "title": "Misc",
       "description": "Project-specific or single-purpose tools, anchored to one repo or one narrow scenario.",
       "skills": [

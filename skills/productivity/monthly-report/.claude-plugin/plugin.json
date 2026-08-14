@@ -1,0 +1,8 @@
+{
+  "name": "monthly-report",
+  "version": "2026.08.13",
+  "description": "Turn a month of stacked release notes into a Chinese monthly work report (月报), regrouped by capability domain instead of by version. Fixed section skeleton, iterative refinement, tmp/work/i -> tmp/work/o by convention.",
+  "author": {
+    "name": "wudi"
+  }
+}
