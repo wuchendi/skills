@@ -1,0 +1,18 @@
+{
+  "name": "monthly-report",
+  "description": "Monthly work report generator",
+  "owner": {
+    "name": "wudi"
+  },
+  "metadata": {
+    "description": "Turns version-ordered release notes (feat(vX.Y) blocks with Features / Fixes / Chores and dependency bumps) into a manager-facing Chinese monthly report: regrouped by capability domain, version spans on section titles, fixes collapsed, dependencies stripped of version numbers, fixed skeleton for month-over-month comparability.",
+    "version": "2026.08.13"
+  },
+  "plugins": [
+    {
+      "name": "monthly-report",
+      "source": "./",
+      "description": "Use when the user needs to roll a month of release notes up into a work report."
+    }
+  ]
+}
