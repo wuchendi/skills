@@ -1,9 +1,9 @@
 ---
 name: monthly-report
-description: Turn a month of stacked release notes (feat(vX.Y) blocks with Features / Fixes / Chores, requirement-doc links, dependency bumps) into a monthly work report that regroups everything by capability domain instead of by version. Trigger when the user pastes a pile of version changelogs and asks to summarize the month, asks for a monthly/period work summary or report, asks to follow the format of a previous month's report, or asks to refine an already-generated report (add missed items, merge sections, trim detail, strengthen the closing summary). Reads from tmp/work/i/<month>.md and writes to tmp/work/o/<month>.md by default. Skip for per-version release notes or changelogs aimed at end users — this produces the manager-facing monthly roll-up, not the changelog itself.
+description: Turn a month of stacked release notes (feat(vX.Y) blocks with Features / Fixes / Chores, requirement-doc links, dependency bumps) into a monthly work report that regroups everything by capability domain instead of by version. Trigger when the user pastes a pile of version changelogs and asks to summarize the month, asks for a monthly/period work summary or report, asks to follow the format of a previous month's report, or asks to refine an already-generated report (add missed items, merge sections, trim detail, strengthen the closing summary). Reads from tmp/work/i/{month}.md and writes to tmp/work/o/{month}.md by default. Skip for per-version release notes or changelogs aimed at end users — this produces the manager-facing monthly roll-up, not the changelog itself.
 metadata:
   author: wudi
-  version: "2026.08.13"
+  version: "2026.08.31"
   source: https://github.com/WuChenDi/skills
 ---
 
@@ -19,10 +19,10 @@ Default convention:
 
 | | Path |
 | --- | --- |
-| Input | `tmp/work/i/<month>.md` — e.g. `5.md` for May |
-| Output | `tmp/work/o/<month>.md` |
+| Input | `tmp/work/i/{month}.md` — e.g. `5.md` for May |
+| Output | `tmp/work/o/{month}.md` |
 
-If the user pastes the content directly, use that. If a prior month's output exists (`tmp/work/o/<month-1>.md`), **read it first** — it is the format contract. Match its heading scheme, section ordering, and level of detail rather than the template below.
+If the user pastes the content directly, use that. If a prior month's output exists (`tmp/work/o/{month-1}.md`), **read it first** — it is the format contract. Match its heading scheme, section ordering, and level of detail rather than the template below.
 
 Work the user mentions in chat but that is absent from the changelog (a side deliverable, another repo, a mini-program, cross-team work) still belongs in the report. It usually becomes its own late section — see `o/5.md`'s 微信媒资小程序 section, which had no counterpart in the input.
 
@@ -137,7 +137,7 @@ The first draft is a starting point; the user iterates on it. Common follow-ups 
 - **Strengthen the closing** — rewrite 总结 only. Do not inflate individual bullets with 大幅提升 / 显著优化 to compensate.
 - **Change the medium** (HTML, speaking notes, slide outline) — keep the same section tree and wording; only the rendering changes.
 
-Rewrite the output file in place each round so `tmp/work/o/<month>.md` is always the current version.
+Rewrite the output file in place each round so `tmp/work/o/{month}.md` is always the current version.
 
 ## Anti-patterns
 
