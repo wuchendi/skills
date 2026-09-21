@@ -1,0 +1,8 @@
+{
+  "name": "editorial-poster",
+  "version": "2026.09.21",
+  "description": "Turn a photo into a ready-to-paste image-generation prompt for a 3:4 split editorial poster: the original photograph on the top half, a minimal hand-drawn paper illustration of the same subject on the bottom half.",
+  "author": {
+    "name": "wudi"
+  }
+}

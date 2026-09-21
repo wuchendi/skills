@@ -62,6 +62,15 @@ Project-specific or one-off tools — kept around but not generally applicable.
 
 Tools for fun, not serious engineering work.
 
+- **[editorial-poster](./skills/fun/editorial-poster/skills/editorial-poster/SKILL.md)** — Turn a photo into an image-generation prompt for a 3:4 split editorial poster: the original photograph preserved on top, a minimal hand-drawn paper illustration of the same subject below, palette compressed from the photo, optional editorial typography. One prompt per photo.
+- **[paper-illustration](./skills/fun/paper-illustration/skills/paper-illustration/SKILL.md)** — The illustration half on its own canvas: a photo reinterpreted as a minimal hand-drawn paper-cover illustration, small centred subject, at most 4 flat colours, rough paper, large negative space.
+
+  Sample output, generated with GPT Image 2.5 Pro (low quality, 1K, 3:4):
+
+  | editorial-poster | paper-illustration |
+  | --- | --- |
+  | <img src="https://cdn.jsdelivr.net/gh/cdLab996/picture-lib/wudi/ai/editorial-poster.png" width="300" alt="editorial-poster sample"> | <img src="https://cdn.jsdelivr.net/gh/cdLab996/picture-lib/wudi/ai/paper-illustration.png" width="300" alt="paper-illustration sample"> |
+
 - **[explain-words](./skills/fun/explain-words/skills/explain-words/SKILL.md)** — Deconstruct an English word into etymology, semantics, nuance, and visual topology, then render a museum-quality HTML card.
 
 ## License

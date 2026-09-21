@@ -1,0 +1,8 @@
+{
+  "name": "paper-illustration",
+  "version": "2026.09.21",
+  "description": "Turn a photo into a ready-to-paste image-generation prompt for a minimal hand-drawn paper-cover illustration: small centred subject, a few flat acrylic colour shapes compressed from the photo, rough paper texture, generous negative space.",
+  "author": {
+    "name": "wudi"
+  }
+}
