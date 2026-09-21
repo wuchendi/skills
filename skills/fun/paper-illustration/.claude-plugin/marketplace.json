@@ -1,0 +1,18 @@
+{
+  "name": "paper-illustration",
+  "description": "Minimal hand-drawn paper illustration prompt",
+  "owner": {
+    "name": "wudi"
+  },
+  "metadata": {
+    "description": "Builds one image-generation prompt per photo for a minimalist hand-drawn paper-cover illustration on a 3:4 canvas: the photo's most recognisable subject reduced to imperfect lines and at most 4 flat colours, small and centred on rough paper with generous negative space and optional editorial typography.",
+    "version": "2026.09.21"
+  },
+  "plugins": [
+    {
+      "name": "paper-illustration",
+      "source": "./",
+      "description": "Use when the user wants a photo reinterpreted as a minimal hand-drawn paper illustration, with no photograph in the frame."
+    }
+  ]
+}

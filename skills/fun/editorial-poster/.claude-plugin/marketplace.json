@@ -1,0 +1,18 @@
+{
+  "name": "editorial-poster",
+  "description": "Photo-on-top, illustration-below editorial poster prompt",
+  "owner": {
+    "name": "wudi"
+  },
+  "metadata": {
+    "description": "Builds one image-generation prompt per photo for a 3:4 poster split into two equal halves: the faithfully preserved photograph on top, a minimal hand-drawn paper-cover illustration of the same subject below, with a palette compressed from the photo and optional editorial typography.",
+    "version": "2026.09.21"
+  },
+  "plugins": [
+    {
+      "name": "editorial-poster",
+      "source": "./",
+      "description": "Use when the user wants the photo + sketch split poster prompt for one or more photos."
+    }
+  ]
+}
