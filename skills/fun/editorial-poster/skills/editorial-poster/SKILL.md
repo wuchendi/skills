@@ -24,6 +24,8 @@ Do not ask for anything else. Aspect ratio, split ratio, and style are fixed by 
 
 Output the template below verbatim, replacing only `<text or none>`. Put each prompt in its own fenced code block. For multiple photos, label the blocks `Photo 1`, `Photo 2`, … in the order received.
 
+The illustration rules in the bottom half intentionally stay aligned with `paper-illustration`; update both templates together when changing subject, palette, typography, or negative-space constraints.
+
 ````
 ```text
 Create one high-end editorial poster from the attached photograph. Use this photo alone; no collage.

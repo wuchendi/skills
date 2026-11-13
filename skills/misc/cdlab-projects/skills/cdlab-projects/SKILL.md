@@ -24,9 +24,9 @@ Match the user's request to one of the intents below. If two apply (e.g. "new ap
 | Scaffold a new app                             | `references/new-app.md`            | `assets/templates/{nextjs-app,worker-app,nuxt-app}` |
 | Scaffold a shared package (`packages/*`)       | `references/new-package.md`        | `assets/templates/package`             |
 | Bump dependencies (catalog, wrangler compat)   | `references/deps-upgrade.md`       | —                                      |
-| Refactor / share logic across apps             | `references/refactor.md`           | —                                      |
+| cdlab-specific refactor overlay               | `references/refactor.md`           | —                                      |
 | Add a feature to an existing app               | `references/new-feature.md`        | —                                      |
-| Pre-commit / pre-PR self-review                | `references/code-review.md`        | —                                      |
+| cdlab-specific review overlay                 | `references/code-review.md`        | —                                      |
 | Sync `CLAUDE.md` / README after a change       | `references/update-docs.md`        | —                                      |
 | "What should I reach for / where does this config live" | `references/stack.md`     | —                                      |
 
