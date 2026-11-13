@@ -25,6 +25,8 @@ Do not ask for anything else.
 
 Output the template below verbatim, replacing only `<text or none>` (and the aspect ratio in the first line under `FORMAT`, when asked). Put each prompt in its own fenced code block. For multiple photos, label the blocks `Photo 1`, `Photo 2`, … in the order received.
 
+The shared subject, palette, typography, and negative-space rules intentionally stay aligned with `editorial-poster`; update both templates together when changing them.
+
 ````
 ```text
 Create one minimal hand-drawn paper illustration from the attached photograph. Use this photo alone; no collage. The output contains no photographic element: the whole canvas is illustration on paper.

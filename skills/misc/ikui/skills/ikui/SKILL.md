@@ -1,7 +1,6 @@
 ---
 name: ikui
 description: Manages ikui components and blocks — searching, adding, composing, and debugging UI from the ikui registry (@ikui). ikui ships copy-paste React primitives for media/timeline editing (audio waveform + player, video thumbnail strips, a zoom-aware timeline of ruler / element / playhead, image compare / crop, particle image, copy button) AND ready-made business blocks composed from them — audio trimmer, video trimmer, image cropper — that deliver a finished feature end to end. Triggers when adding or fixing any of these, when the project's components.json contains an "@ikui" registry, or for requests like "add an ikui waveform", "build a video trimmer", "drop in an audio trimmer block", "image before/after slider", "crop an image", or "add @ikui/<name>".
-allowed-tools: Bash(npx shadcn@latest add *), Bash(npx shadcn@latest init *), Bash(pnpm dlx shadcn@latest add *), Bash(pnpm dlx shadcn@latest init *), Bash(bunx --bun shadcn@latest add *), Bash(bunx --bun shadcn@latest init *), Bash(curl -s https://ik-ui.pages.dev/*)
 metadata:
   author: wudi
   version: "2026.08.09"
