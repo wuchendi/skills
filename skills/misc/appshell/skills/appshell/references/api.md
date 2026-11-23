@@ -1,6 +1,6 @@
 # appshell API and gotchas
 
-Reference for the installed files under `src/shell/**` (as of v0.3.0). Imports are `@/shell/<folder>/<file>`. When this disagrees with the installed source, the source wins.
+Reference for the installed files under `src/shell/**` (as of v0.3.1). Imports are `@/shell/<folder>/<file>`. When this disagrees with the installed source, the source wins.
 
 ## Layout (`shell-layout`)
 
@@ -65,7 +65,15 @@ Behaviour: Cmd/Ctrl+B folds the panel (animated, the page never remounts); click
 | `renderSubRow?(row)` | Full-width block under the row while it returns non-null. The host owns the expanded set; J/K skips sub-rows. |
 | `loading?` | 8 skeleton rows under the header. |
 | `empty?` | Shown instead of the rows when there are none (header kept). |
-| `headerClassName?` | Extra classes only. The sticky offset is automatic: `top-0` in a fill body, `top-12` (under the page header) elsewhere. |
+| `headerClassName?` | Extra classes for the header strip. Placement is automatic: fixed above the rows in a fill body, `sticky top-12` (under the page header) elsewhere. |
+
+Layout (v0.3.1):
+
+- **Cells clip.** A `cell()` that returns a string or number is wrapped in a truncating span (ellipsis); a custom node manages its own overflow (`block truncate`, `min-w-0`). Cells keep a 4px inset, so focus rings of controls inside them are not cut off.
+- **Rows grow.** Rows are at least 36px (`min-h-9 py-1`) and grow with multi-line cells. Keep row controls at most 28px tall (`size="icon-sm"`), or single-line rows grow past 36px.
+- **Wide tables scroll inside themselves.** The table's minimum width is the sum of its track minimums (`minmax(a, …)` counts `a`, fixed lengths count as is, `fr`/`auto` count 0) plus gaps; narrower containers get a horizontal scrollbar on the rows, and the header follows sideways. Give wide columns a real minimum (`minmax(10rem,1fr)`), not `1fr`, or they collapse instead of scrolling.
+- **The table never widens its parent** (`contain: inline-size`): it takes the width it is given. Do not place it as a flex item in a row without a width; in a card, grid cell or column it fills the available width.
+- **Actions stay pinned** to the right edge while the rows scroll sideways.
 
 Rows carry `data-shell-row`; J/K and arrows move between them, starting from the first row when nothing is focused. Elements matching `ROW_INTERACTIVE` (links, buttons, checkboxes, menu items) do not open the row.
 
@@ -108,5 +116,6 @@ const { rows, pager } = useCollectionPage(sorted, { pageSize: 50 });
 - **Base UI, not Radix**: custom triggers use `render={<Button … />}`, not `asChild`. Menu radio items keep the menu open unless given `closeOnClick`.
 - **Theme**: only `--shell-canvas` is read; nothing is injected into the host theme except the `shell-nav-progress` keyframes. Hosts on HSL-channel themes or `data-theme` dark mode work as long as `--color-muted` is a full color.
 - **Fill mode needs the direct-child rule** above; a wrapper `<div>` between the page root and `PageBody` silently disables it.
+- **Row backgrounds are opaque** (`color-mix` of `--color-secondary` into `--color-background`) so the pinned actions can cover what scrolls under them; a `getRowClassName` that sets a translucent background breaks that.
 - **Panels that mount late** (a space that appears after an async check) require v0.3.0 or later; v0.2.1 crashed with "Panel constraints not found".
 - **Don't edit `src/shell/**` in the host**; sync and fix upstream.

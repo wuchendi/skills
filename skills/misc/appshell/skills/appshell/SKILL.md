@@ -59,13 +59,13 @@ Do **not** use `shadcn add` to upgrade: it prompts per file, so "no" also skips 
 
 ```bash
 node <skill-dir>/scripts/sync-shell.mjs --dir apps/web --dry-run          # preview, items = what is installed
-node <skill-dir>/scripts/sync-shell.mjs --dir apps/web --ref v0.3.0       # pin a release (default: latest)
+node <skill-dir>/scripts/sync-shell.mjs --dir apps/web --ref v0.3.1       # pin a release (default: latest)
 node <skill-dir>/scripts/sync-shell.mjs --dir apps/web shell-collection   # add or refresh specific items
 ```
 
 It prints the shadcn components and npm packages the items import; install any the host lacks. Then:
 
-1. Read the release notes / `docs/changelog.md` between the old and new version. Breaking changes so far: new `ShellLabels` keys (v0.2.0, v0.3.0), `--canvas` → `--shell-canvas` (v0.3.0), `CollectionTable headerClassName` no longer sets the sticky offset (v0.3.0).
+1. Read the release notes / `docs/changelog.md` between the old and new version. Breaking changes so far: new `ShellLabels` keys (v0.2.0, v0.3.0), `--canvas` → `--shell-canvas` (v0.3.0), `CollectionTable headerClassName` no longer sets the sticky offset (v0.3.0). v0.3.1 changed no host API but clips overlong cells with an ellipsis and lets wide tables scroll sideways — check tables whose columns relied on overflowing.
 2. `git diff src/shell` to review, then fix the host side (labels object, theme variable, call sites).
 3. Typecheck, unit tests, and run the app (or its e2e) — the shell has no host-side tests of its own.
 
