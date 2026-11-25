@@ -3,7 +3,7 @@ name: appshell
 description: Installs, upgrades, and builds pages on appshell, the dashboard shell shipped as the @cdlab shadcn registry (github.com/wuchendi/appshell) for TanStack Router or Next.js App Router hosts — icon rail, resizable per-space panels, one-row page headers, fill pages whose table scrolls on its own, CollectionTable with sorting / selection / sub-rows / client or server paging, Filter and Display list menus, a Cmd/Ctrl+K search dialog, first-run intros. Triggers when the project's components.json declares an "@cdlab" registry or the app has shell/** (or src/shell/**) with AppShell, and for requests like "add the dashboard shell", "move this app onto appshell", "use appshell in this Next.js app", "upgrade / sync the shell to the latest release", "make this list page fill the screen", "add paging to this table", "add a space panel", or "add @cdlab/shell-<name>". Not for editing the appshell repository itself (that repo has its own AGENTS.md).
 metadata:
   author: wudi
-  version: "2026.11.23"
+  version: "2026.11.25"
   source: https://github.com/WuChenDi/skills
 ---
 
@@ -50,7 +50,7 @@ The shell assumes this stack; check it before installing, and stop and say so if
    ```bash
    yes n | bunx --bun shadcn@latest add @cdlab/shell-router-next @cdlab/shell-layout @cdlab/shell-collection @cdlab/shell-search
    ```
-3. Exclude the shell folder from the host's lint and format (Biome `files.includes: ["!src/shell/**"]` or `"!shell/**"`, ESLint `ignores`). The files follow appshell's own style; reformatting them makes every upgrade a noisy diff.
+3. Keep the host's formatter off the shell folder unless the host already uses appshell's style. Since v0.4.2 the files are formatted with Biome: single quotes, semicolons as needed, 80 columns, 2-space indent. They pass Biome's recommended preset with the `react` and `next` domains. A host on that style can lint and format them as they are. Otherwise exclude the folder (Biome `files.includes: ["!src/shell/**"]` or `"!shell/**"`, ESLint `ignores`); reformatting turns every upgrade into a noisy diff.
 4. Canvas color (optional): the area behind the rail paints `var(--shell-canvas, var(--color-muted))`. Set `--shell-canvas` for light and dark in the host theme, using whatever dark-mode selector the host uses.
 5. Wire it up — see "Using it" and [references/api.md](./references/api.md).
 
@@ -60,7 +60,7 @@ Do **not** use `shadcn add` to upgrade: it prompts per differing file, so "no" a
 
 ```bash
 node <skill-dir>/scripts/sync-shell.mjs --dir apps/web --dry-run          # preview, items = what is installed
-node <skill-dir>/scripts/sync-shell.mjs --dir apps/web --ref v0.4.1       # pin a release (default: latest)
+node <skill-dir>/scripts/sync-shell.mjs --dir apps/web --ref v0.4.2       # pin a release (default: latest)
 node <skill-dir>/scripts/sync-shell.mjs --dir apps/web shell-router-next  # add or refresh specific items
 ```
 
@@ -72,10 +72,11 @@ It prints the shadcn components and npm packages the items import; install any t
    - v0.3.1: no API change, but overlong cells clip with an ellipsis and wide tables scroll sideways.
    - v0.4.0: a router item is required; files move from `~/src/shell` to `shell/` (still `src/shell` in apps with `src/`); `PanelRow` / `PanelAllRow` `to` → `href` (`params` / `search` removed — build the full href); `useShellPanelStore` → `useShellPanel()`; `layoutId` removed and the panel state moves from localStorage to the `appshell` cookie (old values ignored); `useShellLabels` moves to `@/shell/core/labels-context`.
    - v0.4.1: a rail entry folds only its own space's panel on that space's `href`; from a detail page it navigates back.
+   - v0.4.2: no API break (`SearchDialog` `media`, `PanelRow` `count` nodes and `AppShell` `prefs="client"` only widen types). Every shipped file was reformatted once (single quotes, semicolons as needed), so a host that kept the old style sees a formatting-only diff. On TanStack Router, `useShellPathname` now follows the page on screen (`resolvedLocation`), not a pending navigation's target.
 2. `git diff` the shell folder to review, then fix the host side (labels object, theme variable, call sites). Delete shell files the release removed (v0.4.0: `core/panel-store.ts`).
 3. Typecheck, unit tests, and run the app (or its e2e) — the shell has no host-side tests of its own.
 
-Never patch the shell folder in the host. A fix there is lost on the next sync; it belongs upstream (open an issue or PR on `wuchendi/appshell`, or write the requirement down for whoever maintains it).
+Never patch the shell folder in the host (the only exception is the next-intl imports in `shell/router.tsx`, under "Using it"). A fix there is lost on the next sync; it belongs upstream (open an issue or PR on `wuchendi/appshell`, or write the requirement down for whoever maintains it).
 
 ## Using it
 
@@ -86,7 +87,8 @@ Never patch the shell folder in the host. A fix there is lost on the next sync; 
   const prefs = readShellPrefs((await cookies()).toString()); // @/shell/core/prefs
   return <html><body><Shell prefs={prefs} labels={shellLabelsZh}>{children}</Shell></body></html>;
   ```
-  Reading cookies makes those routes dynamic. `@/shell/core/labels`, `prefs`, `spaces` and the collection helpers are plain modules a Server Component can import; everything else is a client component.
+  Reading cookies makes those routes dynamic. A **statically prerendered** host (`output: "export"`, `generateStaticParams`, Cloudflare Pages) has no request cookies: pass `prefs="client"` instead. The shell renders the defaults, then applies the cookie right after hydration without the fold animation. `@/shell/core/labels`, `prefs`, `spaces` and the collection helpers are plain modules a Server Component can import; everything else is a client component.
+- **Locale-prefixed routes** (next-intl `/[locale]/…`): no shell change; hrefs stay plain app paths. In the host's `shell/router.tsx` (the Next adapter), import `Link`, `usePathname` and `useRouter` from the host's `createNavigation()` module instead of `next/link` / `next/navigation` (keep `useLinkStatus` from `next/link`). Paths then lose the locale on the way in and gain it on the way out. This is the one sanctioned edit to the shell folder: re-apply it after every sync, and check it in the `git diff` review.
 - **Spaces and panels**: `spaces` are the rail entries (`footer: true` ones sit at the bottom); `panels` maps a space key to its panel component. Panel open state and width live in the `appshell` cookie; `useShellPanel()` reads and sets the open state.
 - **Labels**: every visible string comes from `labels`. Use `shellLabelsEn` / `shellLabelsZh`, or build the object from the host's i18n. Keep the shell's placeholders intact — with i18next pass them through, e.g. `t("list.selected", { count: "{count}" })`.
 - **Every page** starts with `<PageHeader title menu tools actions />` (filters and header search in `tools`, the display menu and icon buttons in `actions`).
@@ -99,8 +101,8 @@ Details, prop lists and gotchas: [references/api.md](./references/api.md). When 
 
 ## Workflow
 
-1. **Fit check** — stack, router, alias (above). Note the package runner, the app root (`apps/web` in a monorepo) and whether it has `src/`.
+1. **Fit check** — stack, router, alias, and on Next.js whether the routes are prerendered statically and locale-prefixed (above). Note the package runner, the app root (`apps/web` in a monorepo) and whether it has `src/`.
 2. **Install or sync** — first install via `shadcn add` (router item included); upgrades via `scripts/sync-shell.mjs`.
-3. **Wire** — labels, spaces and panels (on Next.js: client wrapper + `prefs` from the server layout), then per page: header, `PageBody fill` for lists, table and pager.
-4. **Exclude** the shell folder from host lint/format.
+3. **Wire** — labels, spaces and panels (on Next.js: client wrapper + `prefs` from the server layout, or `prefs="client"` when static; the next-intl imports in `shell/router.tsx` for locale routes), then per page: header, `PageBody fill` for lists, table and pager.
+4. **Exclude** the shell folder from host format unless the host shares appshell's style (step 3 of Install).
 5. **Verify** — typecheck, tests, and load the app: fold the panel (Cmd/Ctrl+B) and reload (it stays folded; on Next.js no hydration warning), Cmd/Ctrl+K, J/K on a list, a fill list scrolled to the bottom (header and pager still visible), dark mode canvas.

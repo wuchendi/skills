@@ -1,13 +1,13 @@
 # appshell API and gotchas
 
-Reference for the installed files under `shell/**` (`src/shell/**` in apps with `src/`), as of v0.4.1. Imports are `@/shell/<folder>/<file>`. When this disagrees with the installed source, the source wins.
+Reference for the installed files under `shell/**` (`src/shell/**` in apps with `src/`), as of v0.4.2. Imports are `@/shell/<folder>/<file>`. When this disagrees with the installed source, the source wins.
 
 ## Router (`shell-router-tanstack` / `shell-router-next`) — `@/shell/router`
 
 Both items install `shell/router.tsx` with the same exports; the shell routes only through them.
 
 - `ShellLink` — `href` (an app path; query and hash allowed) plus anchor props.
-- `useShellPathname()` — the current path without the base path.
+- `useShellPathname()` — the current path without the base path. It is the path of the page on screen: on TanStack Router it reads `resolvedLocation`, so during a slow navigation (code split chunk, `beforeLoad`, `loader`) the rail and panel switch together with the page, as `usePathname` does on Next.js.
 - `useShellNavigate()` — `(href) => void`.
 - `useShellNavigating()` — drives `NavigationProgress`. On Next.js there is no router-wide pending state: it covers navigations started through `ShellLink` / `useShellNavigate` (the rail, panel rows and search use them); plain `next/link` elsewhere does not drive the bar.
 
@@ -25,7 +25,7 @@ Both items install `shell/router.tsx` with the same exports; the shell routes on
 | `onSearch?: () => void` | Rail search button and Cmd/Ctrl+K. The host renders the dialog. |
 | `banner?: ReactNode` | Above the page inside the content card. |
 | `labels?: ShellLabels` | Defaults to English. |
-| `prefs?: ShellPrefs` | The `appshell` cookie as the server read it (`readShellPrefs(cookieHeader)` from `@/shell/core/prefs`). Pass it from a server-rendered layout so the first render matches the client; SPA hosts omit it and the shell reads `document.cookie`. |
+| `prefs?: ShellPrefs \| "client"` | Where the panel's stored state comes from. A `ShellPrefs` object: the `appshell` cookie as the server read it (`readShellPrefs(cookieHeader)` from `@/shell/core/prefs`), from a server-rendered layout so the first render matches the client. `"client"`: a statically prerendered host; the shell renders the defaults, then applies the cookie in a layout effect right after hydration, without the fold animation. Omitted: client-only (SPA) hosts; the shell reads `document.cookie` while rendering. |
 
 Behaviour: Cmd/Ctrl+B folds the panel (animated, the page never remounts); the panel edge folds it too. A rail entry navigates to its space's `href`; only when that page is shown and the space has a panel does the click fold or unfold instead (from a detail page it goes back to `href`; a space without a panel always navigates). Open state and width persist in the `appshell` cookie (`0`/`1` plus an optional `:<width %>`), one width for every space. `useShellPanel()` (`@/shell/core/panel-state`) gives `{ open, toggle, setOpen }`. Below `md` the rail and panel move into a sheet behind a top bar; the inline panel is also hidden by CSS there, so a server render on a phone shows the page full width.
 
@@ -48,7 +48,7 @@ On Next.js render `AppShell` from a `"use client"` component: `spaces` (icons), 
 
 - `PanelFrame title actions?` — the panel: 48px title row over a scrolling body.
 - `PanelSection label?` — a group; clicking the label folds it.
-- `PanelRow` — `href` (link; a full app path, query included) or `onClick` (button; then navigates to `href` if given) or neither (plain text). `icon` or `dot` (`success | info | progress | warning | danger | muted`; `progress` pulses), `count`, `active`, `menu` (right-click entries), `inset` (reserves the marker slot so a row without icon/dot lines up).
+- `PanelRow` — `href` (link; a full app path, query included) or `onClick` (button; then navigates to `href` if given) or neither (plain text). `icon` or `dot` (`success | info | progress | warning | danger | muted`; `progress` pulses), `count` (a number hides at 0; a node, e.g. an animated number, always shows), `active`, `menu` (right-click entries), `inset` (reserves the marker slot so a row without icon/dot lines up).
 - `PanelAllRow href label` — muted closing "view all" row.
 - Rows pass `active` themselves (compare `useShellPathname()` and any filter state); rows linking to the same path cannot be told apart by the router.
 
@@ -117,11 +117,11 @@ const { rows, pager } = useCollectionPage(sorted, { pageSize: 50 });
 
 ## Search (`shell-search`)
 
-`<SearchDialog open onOpenChange spaces search resultsLabel />` — `search(query, signal) => Promise<ShellSearchResult[]>` with `{ id, label, detail?, icon?, onSelect }`, debounced 200 ms and aborted when superseded. The dialog adds a "Go to" group built from `spaces`, shows `labels.loading` while a search is pending and `labels.searchFailed` when it rejects (results cleared).
+`<SearchDialog open onOpenChange spaces search resultsLabel />` — `search(query, signal) => Promise<ShellSearchResult[]>` with `{ id, label, detail?, icon?, media?, onSelect }`, debounced 200 ms and aborted when superseded. The dialog adds a "Go to" group built from `spaces`, shows `labels.loading` while a search is pending and `labels.searchFailed` when it rejects (results cleared). `detail` is muted text flush right (e.g. a short URL). `media` is a node shown in place of `icon` for thumbnails and avatars; size it `size-8` so rows stay even.
 
 ## Labels (`shell-core`)
 
-`ShellLabels` (`@/shell/core/labels`, plain data; `useShellLabels` lives in `@/shell/core/labels-context`) keys (v0.4.1): `toggleSidebar`, `openMenu`, `search`, `searchPlaceholder`, `searchEmpty`, `searchFailed`, `goTo`, `filter`, `filterActive` (`{count}`), `display`, `reset`, `clearSearch`, `loading`, `selectedCount` (`{count}`), `selectAll`, `deselectAll`, `selectRow` (`{name}`), `clearSelection`, `columns`, `pagerTotal` (`{total}`), `pagerSelected` (`{count}`, `{total}`), `pagerPage` (`{page}`, `{pages}`), `pageSize` (`{size}`), `firstPage`, `previousPage`, `nextPage`, `lastPage`. A typed host object fails typecheck when a release adds keys — that is the signal to add translations.
+`ShellLabels` (`@/shell/core/labels`, plain data; `useShellLabels` lives in `@/shell/core/labels-context`) keys (v0.4.1, unchanged in v0.4.2): `toggleSidebar`, `openMenu`, `search`, `searchPlaceholder`, `searchEmpty`, `searchFailed`, `goTo`, `filter`, `filterActive` (`{count}`), `display`, `reset`, `clearSearch`, `loading`, `selectedCount` (`{count}`), `selectAll`, `deselectAll`, `selectRow` (`{name}`), `clearSelection`, `columns`, `pagerTotal` (`{total}`), `pagerSelected` (`{count}`, `{total}`), `pagerPage` (`{page}`, `{pages}`), `pageSize` (`{size}`), `firstPage`, `previousPage`, `nextPage`, `lastPage`. A typed host object fails typecheck when a release adds keys — that is the signal to add translations.
 
 ## Gotchas
 

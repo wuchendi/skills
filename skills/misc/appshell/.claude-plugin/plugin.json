@@ -1,6 +1,6 @@
 {
   "name": "appshell",
-  "version": "2026.11.23",
+  "version": "2026.11.25",
   "description": "Install, upgrade, and build pages on the appshell dashboard shell from the @cdlab shadcn registry — icon rail, resizable space panels, one-row page headers, fill pages, column tables with paging, list menus, Cmd/Ctrl+K search, first-run intros.",
   "author": {
     "name": "wudi"
